@@ -1,61 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
-import { supabase } from "../lib/supabase";
+import { FormEvent, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-const documents = [
-  {
-    id: 1,
-    name: "10월 캠페인 성과.xlsx",
-    type: "XLSX",
-    color: "bg-emerald-50 text-emerald-700",
-    description: "캠페인별 광고비, 클릭 수, 전환율",
-  },
-  {
-    id: 2,
-    name: "마케팅 주간 회의록.docx",
-    type: "DOCX",
-    color: "bg-blue-50 text-blue-700",
-    description: "주요 결정 사항과 후속 업무",
-  },
-  {
-    id: 3,
-    name: "광고 운영 결과 보고서.pdf",
-    type: "PDF",
-    color: "bg-rose-50 text-rose-700",
-    description: "광고 운영 결과 및 개선 방향",
-  },
-];
-
-const questions = [
-  {
-    label: "성과가 가장 좋았던 캠페인은?",
-    answer:
-      "10월 캠페인 중에서는 가을 신제품 캠페인의 전환율이 가장 높았습니다. 아래 수치는 데모용 예시 데이터입니다.",
-    source: "10월 캠페인 성과.xlsx",
-    detail: "가을 신제품 캠페인 · 전환율 4.8%",
-    note: "비교 기간: 2026년 10월 1일~15일",
-  },
-  {
-    label: "지난 회의에서 정한 할 일은?",
-    answer:
-      "지난 회의에서는 광고 소재 A/B 테스트 진행, 성과 보고서 업데이트, 다음 주 캠페인 예산 검토를 주요 할 일로 정했습니다.",
-    source: "마케팅 주간 회의록.docx",
-    detail: "담당자별 할 일 및 후속 조치",
-    note: "회의록을 바탕으로 구성한 데모 답변입니다.",
-  },
-  {
-    label: "광고 성과 개선 방향은?",
-    answer:
-      "전환율이 높은 소재를 중심으로 예산 배분을 검토하고, 성과가 낮은 소재는 타깃과 메시지를 재점검하는 방향을 제안합니다.",
-    source: "광고 운영 결과 보고서.pdf",
-    detail: "소재별 성과 분석 및 개선 제안",
-    note: "실제 보고서 분석 결과가 아닌 데모용 예시입니다.",
-  },
-];
-
-const jobOptions = [
+const jobCategories = [
   "기획 / 전략",
   "마케팅",
   "경영 / 회계",
@@ -64,894 +12,1192 @@ const jobOptions = [
   "기타",
 ];
 
-export default function Home() {
-  const [demoFocused, setDemoFocused] = useState(false);
-  const [demoCompleted, setDemoCompleted] = useState(false);
-  const [selectedQuestion, setSelectedQuestion] = useState<number | null>(
-    null
+const demoQuestions = [
+  {
+    id: "decision",
+    label: "회의에서 결정된 내용",
+    question: "지난 회의에서 최종 결정된 내용과 그 이유를 정리해 줘.",
+    answer: {
+      title: "회의에서 결정된 핵심 내용",
+      description:
+        "논의 내용을 바탕으로 주요 결정 사항과 결정 배경을 구분해 정리했습니다.",
+      items: [
+        {
+          number: "01",
+          title: "우선순위 조정",
+          content:
+            "신규 기능을 한 번에 확대하기보다 사용 빈도가 높은 핵심 기능부터 개선하기로 했습니다.",
+          tag: "주요 결정",
+        },
+        {
+          number: "02",
+          title: "사용자 반응 확인",
+          content:
+            "기능 개선 이후 사용자 피드백을 수집하고, 이를 바탕으로 다음 개선 방향을 결정하기로 했습니다.",
+          tag: "검토 기준",
+        },
+        {
+          number: "03",
+          title: "다음 회의에서 결과 공유",
+          content:
+            "개선 진행 상황과 사용자 반응을 정리해 다음 회의에서 공유하기로 했습니다.",
+          tag: "후속 계획",
+        },
+      ],
+    },
+  },
+  {
+    id: "tasks",
+    label: "후속 업무와 담당자",
+    question: "회의 이후 해야 할 일과 담당자를 정리해 줘.",
+    answer: {
+      title: "회의 이후 실행할 업무",
+      description:
+        "회의에서 논의한 후속 작업을 실행 단위로 나누어 정리했습니다.",
+      items: [
+        {
+          number: "01",
+          title: "사용자 피드백 수집",
+          content:
+            "최근 사용자 의견을 모으고 반복적으로 언급되는 개선 요청을 분류합니다.",
+          tag: "자료 정리",
+        },
+        {
+          number: "02",
+          title: "개선안 초안 작성",
+          content:
+            "수집한 피드백을 바탕으로 우선 개선할 항목과 실행 방안을 정리합니다.",
+          tag: "기획",
+        },
+        {
+          number: "03",
+          title: "다음 회의 자료 준비",
+          content:
+            "진행 상황과 검토가 필요한 사항을 정리해 다음 회의에서 확인할 수 있도록 준비합니다.",
+          tag: "회의 준비",
+        },
+      ],
+    },
+  },
+  {
+    id: "summary",
+    label: "회의 내용 요약",
+    question: "이번 회의의 핵심 논의와 다음에 확인할 사항을 요약해 줘.",
+    answer: {
+      title: "회의 핵심 요약",
+      description:
+        "긴 회의 기록을 핵심 논의, 결정 사항, 추가 확인 사항으로 나누어 정리했습니다.",
+      items: [
+        {
+          number: "01",
+          title: "핵심 논의",
+          content:
+            "사용자 경험을 개선하기 위해 현재 기능의 사용성과 불편 사항을 점검합니다.",
+          tag: "논의",
+        },
+        {
+          number: "02",
+          title: "결정 사항",
+          content:
+            "우선순위가 높은 항목부터 개선하고, 변경 이후의 반응을 확인하기로 했습니다.",
+          tag: "결정",
+        },
+        {
+          number: "03",
+          title: "추가 확인 사항",
+          content:
+            "개선에 필요한 자료를 확인하고 다음 회의에서 진행 상황을 공유합니다.",
+          tag: "다음 단계",
+        },
+      ],
+    },
+  },
+];
+
+function ArrowRight({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M5 12h14M12 5l7 7-7 7"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
+}
 
+function ArrowDown({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 5v14m-7-7 7 7 7-7"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CheckIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="m5 12 4 4L19 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SparkleIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="m12 3 1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function DocumentIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M7 3.75h7l4.25 4.5v12H7a2 2 0 0 1-2-2v-12a2.5 2.5 0 0 1 2-2.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 4v4h4M8.5 12h7M8.5 15.5h7"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function SearchIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <circle
+        cx="10.8"
+        cy="10.8"
+        r="6.8"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path
+        d="m16 16 4 4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function CheckCircle({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="9"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <path
+        d="m8 12 2.5 2.5L16.5 8.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export default function Home() {
+  const [selectedQuestion, setSelectedQuestion] = useState("decision");
   const [email, setEmail] = useState("");
-  const [job, setJob] = useState("");
+  const [jobCategory, setJobCategory] = useState("");
   const [privacyConsent, setPrivacyConsent] = useState(false);
-
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
-
-  const demoRef = useRef<HTMLElement>(null);
-  const contactRef = useRef<HTMLElement>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const activeQuestion =
-    selectedQuestion === null ? null : questions[selectedQuestion];
+    demoQuestions.find((item) => item.id === selectedQuestion) ??
+    demoQuestions[0];
 
-  useEffect(() => {
-    const target = demoRef.current;
-
-    if (!target || demoCompleted) {
-      setDemoFocused(false);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setDemoFocused(
-          entry.isIntersecting && entry.intersectionRatio > 0.25
-        );
-      },
-      {
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-        rootMargin: "-8% 0px -8% 0px",
-      }
-    );
-
-    observer.observe(target);
-
-    return () => observer.disconnect();
-  }, [demoCompleted]);
-
-  function startDemo() {
-    setSelectedQuestion(null);
-    setDemoCompleted(false);
-
-    demoRef.current?.scrollIntoView({
+  const scrollToSignup = () => {
+    document.getElementById("signup")?.scrollIntoView({
       behavior: "smooth",
-      block: "center",
+      block: "start",
     });
-  }
+  };
 
-  function finishDemo() {
-    setDemoCompleted(true);
-    setDemoFocused(false);
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitMessage("");
+    setSubmitSuccess(false);
 
-    window.setTimeout(() => {
-      contactRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 100);
-  }
-
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (isSubmitting) return;
-
-    setSubmitError("");
-
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!normalizedEmail) {
-      setSubmitError("이메일을 입력해 주세요.");
+    if (!email.trim()) {
+      setSubmitMessage("이메일을 입력해 주세요.");
       return;
     }
 
-    if (!jobOptions.includes(job)) {
-      setSubmitError("현재 담당하는 업무를 선택해 주세요.");
+    if (!jobCategory) {
+      setSubmitMessage("직무를 선택해 주세요.");
       return;
     }
 
     if (!privacyConsent) {
-      setSubmitError("개인정보 수집·이용에 동의해 주세요.");
+      setSubmitMessage("개인정보 수집 및 이용에 동의해 주세요.");
       return;
     }
 
-    setIsSubmitting(true);
+    setSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from("experience_signups")
-        .insert({
-          email: normalizedEmail,
-          job_category: job,
-          privacy_consent: true,
-        });
+      const { error } = await supabase.from("experience_signups").insert({
+        email: email.trim(),
+        job_category: jobCategory,
+        privacy_consent: true,
+      });
 
       if (error) {
-        console.error("Supabase 저장 오류:", error);
-
-        setSubmitError(
-          "신청 정보를 저장하지 못했어요. 잠시 후 다시 시도해 주세요."
+        console.error("신청 저장 오류:", error);
+        setSubmitMessage(
+          "신청을 저장하지 못했어요. 잠시 후 다시 시도해 주세요."
         );
-
         return;
       }
 
-      setSubmitted(true);
+      setSubmitSuccess(true);
+      setSubmitMessage("신청이 완료됐어요. 관심을 가져 주셔서 감사합니다!");
+      setEmail("");
+      setJobCategory("");
+      setPrivacyConsent(false);
     } catch (error) {
       console.error("신청 처리 오류:", error);
-
-      setSubmitError(
+      setSubmitMessage(
         "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요."
       );
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
-  }
+  };
 
   return (
-    <main className="min-h-screen overflow-x-clip bg-white text-slate-900">
-      <div
-        className={`transition-[filter,opacity] duration-500 ${
-          demoFocused
-            ? "pointer-events-none select-none blur-sm opacity-45"
-            : "blur-0 opacity-100"
-        }`}
-      >
-        {/* 고정 상단 헤더 */}
-        <header className="sticky top-0 z-40 border-b border-slate-100 bg-white/95 backdrop-blur-xl">
-          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-8">
-            <a href="#" className="flex shrink-0 items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-lg font-bold text-white">
-                D
-              </div>
-              <span className="text-lg font-bold tracking-tight">
-                자료캐치
-              </span>
+    <main className="min-h-screen overflow-hidden bg-[#f8f8fc] text-[#191925]">
+
+      {/* Navigation */}
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/60 bg-white/70 backdrop-blur-2xl">
+        <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
+          <a
+            href="#home"
+            className="flex items-center gap-2.5"
+            aria-label="Gather 홈"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-[11px] bg-gradient-to-br from-[#8577ff] via-[#7365ee] to-[#5546d8] text-white shadow-[0_4px_12px_rgba(104,87,225,0.25)]">
+              <SparkleIcon size={19} />
+            </div>
+            <span className="text-[20px] font-semibold tracking-[-0.8px]">
+              gather
+            </span>
+          </a>
+
+          <nav className="hidden items-center gap-8 text-[13px] font-medium text-[#777787] sm:flex">
+            <a href="#problem" className="transition hover:text-[#242438]">
+              Why Gather
             </a>
+            <a href="#experience" className="transition hover:text-[#242438]">
+              Experience
+            </a>
+          </nav>
 
-            <nav className="hidden items-center gap-7 text-sm text-slate-500 md:flex">
-              <a
-                href="#problem"
-                className="transition hover:text-indigo-600"
-              >
-                문제 발견
-              </a>
-              <a
-                href="#solution"
-                className="transition hover:text-indigo-600"
-              >
-                해결 방법
-              </a>
-              <a
-                href="#contact"
-                className="transition hover:text-indigo-600"
-              >
-                의견 남기기
-              </a>
-            </nav>
+          <button
+            onClick={scrollToSignup}
+            className="flex items-center gap-2 rounded-full bg-[#242238] px-4 py-2.5 text-[12px] font-semibold text-white transition hover:bg-[#49445f] sm:px-5 sm:text-[13px]"
+          >
+            소식 받아보기
+            <ArrowRight size={15} />
+          </button>
+        </div>
+      </header>
 
-            <button
-              type="button"
-              onClick={startDemo}
-              className="shrink-0 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 sm:px-5"
-            >
-              체험하기 →
-            </button>
-          </div>
-        </header>
+      {/* Hero */}
+      <section
+        id="home"
+        className="relative isolate px-5 pb-20 pt-36 sm:px-8 sm:pb-28 sm:pt-44 lg:px-12 lg:pt-48"
+      >
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute left-1/2 top-[-100px] h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-[#e9e5ff] opacity-75 blur-[100px]" />
+          <div className="absolute right-[-120px] top-[220px] h-[350px] w-[350px] rounded-full bg-[#dceeff] opacity-65 blur-[100px]" />
+          <div className="absolute bottom-[-150px] left-[-100px] h-[350px] w-[350px] rounded-full bg-[#f1e5ff] opacity-60 blur-[100px]" />
+        </div>
 
-        {/* 메인 소개 */}
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-100/70 blur-3xl sm:h-96 sm:w-96" />
-          <div className="pointer-events-none absolute -bottom-20 -left-24 h-72 w-72 rounded-full bg-violet-100/60 blur-3xl" />
-
-          <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-2 lg:py-28">
-            <div>
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-4 py-2 text-xs font-semibold text-indigo-700 shadow-sm sm:text-sm">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />
-                직장인을 위한 업무 자료 탐색 체험
-              </div>
-
-              <h1 className="text-4xl font-bold leading-[1.2] tracking-tight sm:text-5xl lg:text-[58px]">
-                자료 찾다가,
-                <br />
-                오늘 할 일은
-                <br />
-                <span className="text-indigo-600">
-                  언제 하세요?
-                </span>
-              </h1>
-
-              <p className="mt-6 max-w-lg text-base leading-8 text-slate-500 sm:mt-7 sm:text-lg">
-                엑셀을 열고, 문서를 뒤지고, 지난 기록을 다시 확인하는
-                시간. 흩어진 업무 자료 속에서 필요한 정보를 찾는 과정을
-                직접 경험해 보세요.
-              </p>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={startDemo}
-                  className="rounded-xl bg-indigo-600 px-7 py-4 font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:bg-indigo-700"
-                >
-                  내 업무 시간 되찾기 →
-                </button>
-
-                <a
-                  href="#problem"
-                  className="rounded-xl border border-slate-200 bg-white px-7 py-4 text-center font-semibold text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50"
-                >
-                  어떤 문제를 해결하나요?
-                </a>
-              </div>
-
-              <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-400">
-                <span>✓ 별도 파일 업로드 없이 체험</span>
-                <span>✓ 약 1분 소요</span>
-                <span>✓ 예시 자료 사용</span>
-              </div>
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="gather-fade-up mb-7 inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/70 px-4 py-2 text-[11px] font-medium tracking-[0.02em] text-[#696681] shadow-[0_4px_24px_rgba(67,57,123,0.05)] sm:text-[12px]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#8273f6]" />
+              Your work, connected.
             </div>
 
-            {/* 미리보기 */}
-            <div className="relative min-w-0">
-              <div className="absolute -inset-3 rounded-[32px] bg-gradient-to-br from-indigo-100 to-violet-100 opacity-70 blur-xl sm:-inset-4" />
+            <h1 className="gather-fade-up text-[39px] font-semibold leading-[1.2] tracking-[-2.3px] sm:text-[57px] sm:leading-[1.17] sm:tracking-[-3.5px] lg:text-[72px]">
+              자료를 찾는 시간보다,
+              <br />
+              <span className="bg-gradient-to-r from-[#8172f4] via-[#7162e6] to-[#4e62cb] bg-clip-text text-transparent">
+                일을 진전시키는 시간에.
+              </span>
+            </h1>
 
-              <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-indigo-100/60">
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4 sm:px-5">
+            <p className="gather-fade-up mx-auto mt-7 max-w-[610px] text-[14px] leading-[1.9] text-[#747486] sm:mt-8 sm:text-[16px]">
+              회의 기록은 쌓이고, 필요한 정보는 흩어지고,
+              <br className="hidden sm:block" />
+              같은 내용을 다시 찾고 정리하는 일은 반복됩니다.
+              <br />
+              Gather와 함께 업무의 맥락을 찾고 다음 단계로 나아가세요.
+            </p>
+
+            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a
+                href="#experience"
+                className="group inline-flex min-h-[49px] items-center justify-center gap-2 rounded-full bg-[#7163e8] px-7 text-[13px] font-semibold text-white shadow-[0_8px_25px_rgba(113,99,232,0.22)] transition hover:-translate-y-0.5 hover:bg-[#6152db] hover:shadow-[0_12px_30px_rgba(113,99,232,0.3)]"
+              >
+                업무 흐름 살펴보기
+                <ArrowRight size={16} />
+              </a>
+
+              <button
+                onClick={scrollToSignup}
+                className="inline-flex min-h-[49px] items-center justify-center gap-2 rounded-full border border-white bg-white/65 px-7 text-[13px] font-semibold text-[#454457] shadow-sm transition hover:bg-white"
+              >
+                소식 받아보기
+                <ArrowDown size={15} />
+              </button>
+            </div>
+          </div>
+
+          {/* Hero visual */}
+          <div className="relative mx-auto mt-16 max-w-[940px] sm:mt-20">
+            <div className="absolute left-[7%] top-[7%] h-[75%] w-[86%] rounded-[35px] bg-gradient-to-br from-[#ded9ff] to-[#e8efff] opacity-80 blur-2xl" />
+
+            <div className="gather-glass gather-fade-up relative overflow-hidden rounded-[24px] border border-white/90 p-3 shadow-[0_30px_100px_rgba(74,64,131,0.13)] sm:rounded-[30px] sm:p-5">
+              <div className="overflow-hidden rounded-[17px] border border-[#eae9f1] bg-white sm:rounded-[21px]">
+                <div className="flex h-[52px] items-center justify-between border-b border-[#efedf5] px-4 sm:h-[60px] sm:px-6">
                   <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                    <div className="flex gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-[#f2b4b4]" />
+                      <span className="h-2 w-2 rounded-full bg-[#f0d08b]" />
+                      <span className="h-2 w-2 rounded-full bg-[#a7d9b5]" />
+                    </div>
+                    <span className="ml-2 text-[11px] font-medium text-[#9291a0] sm:text-[12px]">
+                      Work overview
+                    </span>
                   </div>
-                  <span className="text-xs text-slate-400">
-                    내 업무 자료
+                  <span className="rounded-full bg-[#f4f1ff] px-3 py-1.5 text-[10px] font-medium text-[#7668d9] sm:text-[11px]">
+                    Connected context
                   </span>
                 </div>
 
-                <div className="p-4 sm:p-7">
-                  <div className="mb-5 flex items-center justify-between gap-2">
-                    <div>
-                      <p className="text-xs text-slate-400">
-                        WORKSPACE / MARKETING
-                      </p>
-                      <h3 className="mt-1 text-lg font-bold">
-                        자료 보관함
-                      </h3>
+                <div className="grid min-h-[260px] grid-cols-1 sm:grid-cols-[0.85fr_1.15fr]">
+                  <div className="border-b border-[#efedf5] p-5 sm:border-b-0 sm:border-r sm:p-7">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a1a0b1]">
+                      Your workspace
+                    </p>
+
+                    <h2 className="mt-3 text-[20px] font-semibold tracking-[-0.7px] sm:text-[23px]">
+                      흩어진 업무 기록
+                    </h2>
+
+                    <p className="mt-2 text-[11px] leading-6 text-[#9291a0] sm:text-[12px]">
+                      필요한 정보가 담긴 기록을
+                      <br />
+                      한곳에서 확인해 보세요.
+                    </p>
+
+                    <div className="mt-5 space-y-2.5">
+                      {[
+                        {
+                          title: "주간 기획 회의",
+                          date: "10. 14",
+                          icon: "doc",
+                        },
+                        {
+                          title: "캠페인 진행 논의",
+                          date: "10. 12",
+                          icon: "doc",
+                        },
+                        {
+                          title: "프로젝트 회고",
+                          date: "10. 09",
+                          icon: "doc",
+                        },
+                      ].map((file) => (
+                        <div
+                          key={file.title}
+                          className="flex items-center gap-3 rounded-[12px] border border-[#f0eef6] bg-[#fcfbff] p-3"
+                        >
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[#eeebff] text-[#7668df]">
+                            <DocumentIcon size={16} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[11px] font-medium text-[#4d4c5d] sm:text-[12px]">
+                              {file.title}
+                            </p>
+                            <p className="mt-1 text-[10px] text-[#a3a1b0]">
+                              회의 기록
+                            </p>
+                          </div>
+                          <span className="shrink-0 text-[10px] text-[#aaa9b8]">
+                            {file.date}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                    <span className="shrink-0 rounded-lg bg-indigo-50 px-3 py-2 text-xs font-medium text-indigo-600">
-                      자료 3개
+                  </div>
+
+                  <div className="bg-gradient-to-br from-white to-[#faf9ff] p-5 sm:p-7">
+                    <div className="flex items-center gap-2 text-[#7567df]">
+                      <SparkleIcon size={18} />
+                      <span className="text-[11px] font-semibold">
+                        Ask your work
+                      </span>
+                    </div>
+
+                    <div className="mt-5 rounded-[15px] border border-[#e9e5fb] bg-white p-4 shadow-[0_4px_18px_rgba(72,60,140,0.04)] sm:p-5">
+                      <p className="text-[12px] leading-6 text-[#4f4d60] sm:text-[13px]">
+                        지난 회의에서 결정된 내용과
+                        <br className="hidden sm:block" />
+                        다음에 해야 할 일을 정리해 줘.
+                      </p>
+                    </div>
+
+                    <div className="gather-float mt-4 rounded-[15px] border border-[#ebe7ff] bg-white/90 p-4 sm:p-5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#eeeaff] text-[#7464e5]">
+                          <SparkleIcon size={15} />
+                        </div>
+                        <span className="text-[12px] font-semibold text-[#424054]">
+                          핵심 내용 정리
+                        </span>
+                      </div>
+
+                      <div className="mt-4 space-y-3">
+                        {[
+                          "주요 결정 사항 확인",
+                          "후속 업무와 진행 방향 정리",
+                          "다음 회의 준비 항목 확인",
+                        ].map((item) => (
+                          <div
+                            key={item}
+                            className="flex items-start gap-2.5 text-[11px] leading-5 text-[#767487] sm:text-[12px]"
+                          >
+                            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#f0edff] text-[#7667e5]">
+                              <CheckIcon size={11} />
+                            </span>
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <p className="mt-4 text-center text-[10px] text-[#aaa8b8]">
+                      Find context. Move work forward.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pointer-events-none absolute -bottom-5 left-1/2 hidden -translate-x-1/2 rounded-full border border-white/90 bg-white/85 px-5 py-2.5 text-[11px] text-[#77748e] shadow-[0_8px_25px_rgba(61,51,117,0.07)] backdrop-blur-xl sm:block">
+              필요한 맥락을 찾고, 다음 업무로 연결하세요.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Problem */}
+      <section
+        id="problem"
+        className="scroll-mt-24 px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
+      >
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.19em] text-[#8173e7]">
+              The everyday friction
+            </p>
+
+            <h2 className="mt-5 text-[29px] font-semibold leading-[1.35] tracking-[-1.5px] sm:text-[43px] sm:tracking-[-2px]">
+              일보다 자료를 찾는 데
+              <br className="sm:hidden" />{" "}
+              더 많은 시간을 쓰고 있나요?
+            </h2>
+
+            <p className="mx-auto mt-5 max-w-[590px] text-[13px] leading-[1.95] text-[#828193] sm:text-[15px]">
+              필요한 정보는 분명 어딘가에 있는데,
+              <br className="hidden sm:block" />
+              다시 찾고 확인하고 정리하는 과정은 매번 반복됩니다.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-4 sm:mt-16 sm:grid-cols-3">
+            {[
+              {
+                number: "01",
+                title: "찾고 싶은 기록이 있다",
+                description:
+                  "지난 회의에서 무슨 이야기를 했는지, 어떤 결정을 내렸는지 다시 찾아봅니다.",
+                icon: <SearchIcon size={21} />,
+              },
+              {
+                number: "02",
+                title: "읽고 정리하는 일이 남는다",
+                description:
+                  "긴 기록을 다시 읽고, 중요한 내용과 필요한 정보를 직접 골라냅니다.",
+                icon: <DocumentIcon size={21} />,
+              },
+              {
+                number: "03",
+                title: "결국 다시 확인한다",
+                description:
+                  "결정 사항과 다음 할 일을 다시 정리하고 공유하는 과정이 이어집니다.",
+                icon: <CheckCircle size={21} />,
+              },
+            ].map((item) => (
+              <article
+                key={item.number}
+                className="rounded-[22px] border border-white bg-white/75 p-6 shadow-[0_8px_35px_rgba(58,50,104,0.035)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_15px_45px_rgba(58,50,104,0.075)] sm:p-7"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold tracking-[0.12em] text-[#aaa7c0]">
+                    {item.number}
+                  </span>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-[13px] bg-[#f0edff] text-[#7768e5]">
+                    {item.icon}
+                  </div>
+                </div>
+
+                <h3 className="mt-7 text-[16px] font-semibold tracking-[-0.5px] sm:text-[17px]">
+                  {item.title}
+                </h3>
+
+                <p className="mt-3 text-[12px] leading-[1.9] text-[#858395] sm:text-[13px]">
+                  {item.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Transition */}
+      <section className="px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
+        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[27px] bg-gradient-to-br from-[#29243f] via-[#343052] to-[#4c4775] px-6 py-12 text-center text-white shadow-[0_25px_75px_rgba(47,40,85,0.15)] sm:rounded-[32px] sm:px-12 sm:py-16">
+          <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-[#8f81ff]/25 blur-[70px]" />
+          <div className="pointer-events-none absolute -bottom-24 -left-10 h-56 w-56 rounded-full bg-[#8ebaff]/15 blur-[65px]" />
+
+          <div className="relative">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[17px] border border-white/15 bg-white/10 text-[#d9d3ff]">
+              <SparkleIcon size={24} />
+            </div>
+
+            <h2 className="mt-6 text-[26px] font-semibold leading-[1.4] tracking-[-1.2px] sm:text-[38px] sm:tracking-[-1.8px]">
+              이미 쌓인 업무 기록,
+              <br />
+              다음 업무의 출발점으로.
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-[530px] text-[12px] leading-[1.9] text-white/65 sm:text-[14px]">
+              기억에만 의존하거나 같은 자료를 반복해서 찾는 대신,
+              <br className="hidden sm:block" />
+              필요한 맥락을 확인하고 실행할 일에 집중해 보세요.
+            </p>
+
+            <a
+              href="#experience"
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[12px] font-semibold text-[#35304f] transition hover:-translate-y-0.5 hover:bg-[#f2efff] sm:text-[13px]"
+            >
+              업무 흐름 살펴보기
+              <ArrowRight size={15} />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive experience */}
+      <section
+        id="experience"
+        className="scroll-mt-20 px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
+      >
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.19em] text-[#8173e7]">
+              Explore the workflow
+            </p>
+
+            <h2 className="mt-5 text-[29px] font-semibold leading-[1.35] tracking-[-1.5px] sm:text-[43px] sm:tracking-[-2px]">
+              필요한 정보를 물어보고,
+              <br />
+              다음 할 일까지 정리하기
+            </h2>
+
+            <p className="mx-auto mt-5 max-w-[560px] text-[13px] leading-[1.95] text-[#828193] sm:text-[15px]">
+              회의 기록을 다시 읽는 대신, 확인하고 싶은 내용을 질문해 보세요.
+              <br className="hidden sm:block" />
+              아래 질문을 선택하면 정보가 정리되는 흐름을 살펴볼 수 있어요.
+            </p>
+          </div>
+
+          <div className="mt-11 overflow-hidden rounded-[25px] border border-white bg-white/80 shadow-[0_20px_75px_rgba(59,50,111,0.08)] sm:mt-14 sm:rounded-[30px]">
+            {/* Demo header */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#efedf5] px-5 py-4 sm:px-7 sm:py-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-gradient-to-br from-[#8d7dff] to-[#6556d9] text-white">
+                  <SparkleIcon size={19} />
+                </div>
+                <div>
+                  <p className="text-[13px] font-semibold tracking-[-0.3px]">
+                    Work assistant
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-[#9b99ab]">
+                    회의 기록에서 필요한 정보 찾기
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 rounded-full bg-[#f4f1ff] px-3 py-1.5 text-[10px] font-medium text-[#7769df]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#8879f4]" />
+                Interactive example
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
+              {/* Questions */}
+              <div className="border-b border-[#efedf5] bg-[#fbfaff] p-5 sm:p-7 lg:border-b-0 lg:border-r">
+                <div className="flex items-center gap-2">
+                  <DocumentIcon size={16} />
+                  <h3 className="text-[12px] font-semibold text-[#535165]">
+                    어떤 정보가 필요하세요?
+                  </h3>
+                </div>
+
+                <p className="mt-2 text-[11px] leading-5 text-[#9a98aa]">
+                  확인하고 싶은 업무를 선택해 보세요.
+                </p>
+
+                <div className="mt-5 space-y-3">
+                  {demoQuestions.map((item) => {
+                    const active = selectedQuestion === item.id;
+
+                    return (
+                      <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setSelectedQuestion(item.id)}
+                          aria-pressed={active}
+                          className={`group w-full rounded-[16px] border p-4 text-left transition duration-200 ${
+                            active
+                              ? "border-[#bdb4ff] bg-white shadow-[0_5px_20px_rgba(108,93,216,0.09)]"
+                              : "border-[#eeecf4] bg-white/60 hover:border-[#d9d3fa] hover:bg-white"
+                          }`}
+                        >                 
+                        <div className="flex items-center justify-between gap-3">
+                          <span
+                            className={`text-[12px] font-semibold ${
+                              active ? "text-[#6c5cda]" : "text-[#565467]"
+                            }`}
+                          >
+                            {item.label}
+                          </span>
+
+                          <span
+                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition ${
+                              active
+                                ? "border-[#7768e6] bg-[#7768e6] text-white"
+                                : "border-[#dcd9e8] text-transparent"
+                            }`}
+                          >
+                            <CheckIcon size={12} />
+                          </span>
+                        </div>
+
+                        <p className="mt-2 text-[11px] leading-[1.8] text-[#8c8a9c]">
+                          {item.question}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-5 rounded-[14px] border border-[#eae7fb] bg-[#f5f2ff] p-4">
+                  <div className="flex items-start gap-2.5">
+                    <div className="mt-0.5 text-[#7b6de0]">
+                      <SparkleIcon size={16} />
+                    </div>
+                    <p className="text-[10px] leading-[1.8] text-[#79738f]">
+                      질문에 따라 필요한 정보와 후속 업무를 구분해 확인할 수
+                      있습니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Answer */}
+              <div className="min-w-0 p-5 sm:p-7 lg:p-8">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#eeeaff] text-[#7464df]">
+                    <SparkleIcon size={14} />
+                  </span>
+                  <span className="text-[11px] font-semibold text-[#76738d]">
+                    질문
+                  </span>
+                </div>
+
+                <div className="mt-3 rounded-[15px] border border-[#e9e6f3] bg-[#faf9fd] p-4 sm:p-5">
+                  <p className="text-[12px] leading-[1.9] text-[#535166] sm:text-[13px]">
+                    {activeQuestion.question}
+                  </p>
+                </div>
+
+                <div
+                  key={selectedQuestion}
+                  className="gather-fade-up mt-7"
+                  aria-live="polite"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#8d7dff] to-[#6556d9] text-white">
+                      <SparkleIcon size={15} />
+                    </div>
+                    <span className="text-[12px] font-semibold text-[#454359]">
+                      정리된 내용
                     </span>
                   </div>
 
-                  <div className="space-y-3">
-                    {documents.map((doc) => (
-                      <div
-                        key={doc.id}
-                        className="flex min-w-0 items-center gap-3 rounded-xl border border-slate-100 p-3 transition hover:border-indigo-200 hover:bg-indigo-50/30"
+                  <h3 className="mt-5 text-[19px] font-semibold tracking-[-0.7px] sm:text-[22px]">
+                    {activeQuestion.answer.title}
+                  </h3>
+
+                  <p className="mt-2 text-[11px] leading-[1.9] text-[#9290a1] sm:text-[12px]">
+                    {activeQuestion.answer.description}
+                  </p>
+
+                  <div className="mt-5 space-y-3">
+                    {activeQuestion.answer.items.map((item) => (
+                      <article
+                        key={item.number}
+                        className="rounded-[15px] border border-[#eeecf5] bg-white p-4 transition hover:border-[#ddd7fa] sm:p-5"
                       >
-                        <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[9px] font-bold sm:h-11 sm:w-11 sm:text-[10px] ${doc.color}`}
-                        >
-                          {doc.type}
-                        </div>
+                        <div className="flex items-start gap-3">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] bg-[#f1efff] text-[10px] font-semibold text-[#7869e0]">
+                            {item.number}
+                          </span>
 
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold">
-                            {doc.name}
-                          </p>
-                          <p className="mt-1 truncate text-xs text-slate-400">
-                            {doc.description}
-                          </p>
-                        </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h4 className="text-[12px] font-semibold text-[#4b495d] sm:text-[13px]">
+                                {item.title}
+                              </h4>
+                              <span className="rounded-full bg-[#f5f3fb] px-2 py-1 text-[9px] font-medium text-[#8b86a7]">
+                                {item.tag}
+                              </span>
+                            </div>
 
-                        <span className="shrink-0 text-slate-300">
-                          ↗
-                        </span>
-                      </div>
+                            <p className="mt-2 text-[11px] leading-[1.9] text-[#898799] sm:text-[12px]">
+                              {item.content}
+                            </p>
+                          </div>
+                        </div>
+                      </article>
                     ))}
                   </div>
 
-                  <div className="mt-5 rounded-2xl bg-slate-50 p-4">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-indigo-600">
-                      <span>✳</span>
-                      자료에 대해 질문하기
+                  <div className="mt-5 flex items-start gap-3 rounded-[15px] bg-gradient-to-r from-[#f3f0ff] to-[#f6f8ff] p-4">
+                    <span className="mt-0.5 text-[#7869df]">
+                      <CheckCircle size={17} />
+                    </span>
+                    <div>
+                      <p className="text-[11px] font-semibold text-[#57536e]">
+                        다음 단계까지 한눈에
+                      </p>
+                      <p className="mt-1 text-[10px] leading-[1.8] text-[#85819e]">
+                        결정 사항과 후속 업무를 구분하면 다음에 무엇을 확인하고
+                        실행해야 할지 더 명확해집니다.
+                      </p>
                     </div>
-
-                    <p className="mt-3 text-sm leading-6 text-slate-600">
-                      &ldquo;이번 달 성과가 가장 좋았던 캠페인은
-                      무엇이었지?&rdquo;
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={startDemo}
-                      className="mt-4 flex w-full items-center justify-between rounded-xl bg-white px-4 py-3 text-left text-xs text-slate-400 ring-1 ring-slate-200 transition hover:ring-indigo-300"
-                    >
-                      질문을 선택해 체험해 보세요
-                      <span className="rounded-lg bg-indigo-600 px-3 py-2 text-white">
-                        체험 →
-                      </span>
-                    </button>
                   </div>
-
-                  <p className="mt-4 text-center text-[10px] text-slate-400">
-                    이해를 돕기 위한 예시 화면입니다.
-                  </p>
                 </div>
               </div>
             </div>
+
+            <div className="border-t border-[#efedf5] bg-white/70 px-5 py-3.5 sm:px-7">
+              <p className="text-[10px] leading-5 text-[#a19eaf]">
+                위 화면은 업무 흐름을 이해하기 위한 예시입니다. 실제 답변은
+                연결된 기록과 사용 가능한 기능에 따라 달라질 수 있습니다.
+              </p>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* 문제 제시 */}
-        <section
-          id="problem"
-          className="scroll-mt-20 bg-slate-50 py-16 sm:py-24"
-        >
-          <div className="mx-auto max-w-6xl px-5 sm:px-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-bold text-indigo-600">
-                SOUND FAMILIAR?
-              </p>
-
-              <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-                분명 어딘가에 있는데,
-                <br />
-                찾는 데 시간이 더 걸립니다.
-              </h2>
-
-              <p className="mt-5 leading-7 text-slate-500">
-                자료가 없어서가 아니라, 필요한 자료를 찾고 연결하는
-                과정이 번거로운 건 아닐까요?
-              </p>
-            </div>
-
-            <div className="mt-10 grid gap-4 sm:mt-12 md:grid-cols-3">
-              {[
-                {
-                  number: "01",
-                  title: "파일을 하나씩 열어보기",
-                  description:
-                    "엑셀, 회의록, 보고서. 어디에 답이 있는지 몰라 파일을 하나씩 확인합니다.",
-                  tag: "자료 탐색",
-                },
-                {
-                  number: "02",
-                  title: "같은 내용을 다시 확인하기",
-                  description:
-                    "이전에 정리했던 정보도 필요할 때마다 다시 찾고, 또 검토합니다.",
-                  tag: "반복 작업",
-                },
-                {
-                  number: "03",
-                  title: "찾은 정보를 다시 정리하기",
-                  description:
-                    "자료에서 내용을 찾은 뒤에도 보고하거나 공유할 형태로 다시 정리해야 합니다.",
-                  tag: "업무 연결",
-                },
-              ].map((item) => (
-                <article
-                  key={item.number}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg sm:p-7"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-3xl font-bold text-indigo-100">
-                      {item.number}
-                    </span>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">
-                      {item.tag}
-                    </span>
-                  </div>
-
-                  <h3 className="mt-6 text-lg font-bold">
-                    {item.title}
-                  </h3>
-
-                  <p className="mt-3 text-sm leading-7 text-slate-500">
-                    {item.description}
-                  </p>
-                </article>
-              ))}
-            </div>
-
-            <p className="mt-8 text-center text-sm font-medium text-slate-600">
-              필요한 건 더 많은 파일이 아니라, 필요한 정보를 찾는 더
-              나은 방법.
+      {/* Benefits */}
+      <section className="px-5 py-16 sm:px-8 sm:py-24 lg:px-12">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.19em] text-[#8173e7]">
+              Less searching, more doing
             </p>
-          </div>
-        </section>
 
-        {/* 해결 방법 */}
-        <section
-          id="solution"
-          className="scroll-mt-20 py-16 sm:py-24"
-        >
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:gap-12">
-            <div>
-              <p className="text-sm font-bold text-indigo-600">
-                FROM SEARCH TO ACTION
+            <h2 className="mt-5 text-[29px] font-semibold leading-[1.4] tracking-[-1.5px] sm:text-[40px] sm:tracking-[-2px]">
+              반복되는 정리에서 벗어나
+              <br />
+              다음 일에 집중하세요.
+            </h2>
+
+            <p className="mt-5 max-w-[440px] text-[13px] leading-[2] text-[#828193] sm:text-[14px]">
+              업무 기록을 다시 확인하고, 필요한 정보를 추리고, 실행할 일을
+              정리하는 과정. 그 반복을 줄이고 실제로 일을 진전시키는 데 더
+              많은 시간을 쓸 수 있도록.
+            </p>
+
+            <button
+              onClick={scrollToSignup}
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#7163e8] px-6 py-3.5 text-[12px] font-semibold text-white shadow-[0_6px_20px_rgba(113,99,232,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6152db]"
+            >
+              업데이트 받아보기
+              <ArrowRight size={15} />
+            </button>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <article className="rounded-[21px] border border-white bg-white/80 p-6 shadow-[0_8px_30px_rgba(58,50,104,0.035)] sm:p-7">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#f0edff] text-[#7667df]">
+                <SearchIcon size={22} />
+              </div>
+              <h3 className="mt-6 text-[15px] font-semibold tracking-[-0.4px]">
+                필요한 맥락 찾기
+              </h3>
+              <p className="mt-2 text-[12px] leading-[1.9] text-[#898799]">
+                과거 기록을 다시 살펴보며 필요한 정보를 확인합니다.
+              </p>
+            </article>
+
+            <article className="rounded-[21px] border border-white bg-white/80 p-6 shadow-[0_8px_30px_rgba(58,50,104,0.035)] sm:mt-9 sm:p-7">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#eaf3ff] text-[#5f8bd5]">
+                <DocumentIcon size={22} />
+              </div>
+              <h3 className="mt-6 text-[15px] font-semibold tracking-[-0.4px]">
+                핵심 내용 정리
+              </h3>
+              <p className="mt-2 text-[12px] leading-[1.9] text-[#898799]">
+                긴 기록 속에서 결정 사항과 필요한 정보를 구분합니다.
+              </p>
+            </article>
+
+            <article className="rounded-[21px] border border-white bg-white/80 p-6 shadow-[0_8px_30px_rgba(58,50,104,0.035)] sm:p-7">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#e8f7f0] text-[#4d9b79]">
+                <CheckCircle size={22} />
+              </div>
+              <h3 className="mt-6 text-[15px] font-semibold tracking-[-0.4px]">
+                후속 업무 연결
+              </h3>
+              <p className="mt-2 text-[12px] leading-[1.9] text-[#898799]">
+                회의에서 나온 내용을 다음 실행 단계로 이어갑니다.
+              </p>
+            </article>
+
+            <article className="rounded-[21px] border border-white bg-white/80 p-6 shadow-[0_8px_30px_rgba(58,50,104,0.035)] sm:mt-9 sm:p-7">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#fff0e8] text-[#d38b61]">
+                <SparkleIcon size={22} />
+              </div>
+              <h3 className="mt-6 text-[15px] font-semibold tracking-[-0.4px]">
+                업무에 집중하기
+              </h3>
+              <p className="mt-2 text-[12px] leading-[1.9] text-[#898799]">
+                반복되는 자료 확인과 정리에 쓰는 시간을 줄이는 데 집중합니다.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* Signup */}
+      <section
+        id="signup"
+        className="scroll-mt-20 px-5 pb-20 pt-12 sm:px-8 sm:pb-28 sm:pt-16 lg:px-12"
+      >
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-[28px] border border-white bg-white/80 shadow-[0_20px_75px_rgba(59,50,111,0.08)] sm:rounded-[34px]">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#e5dfff] opacity-75 blur-[75px]" />
+          <div className="pointer-events-none absolute -bottom-28 -left-12 h-64 w-64 rounded-full bg-[#e3efff] opacity-70 blur-[75px]" />
+
+          <div className="relative grid lg:grid-cols-[1fr_0.9fr]">
+            <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[15px] bg-gradient-to-br from-[#8d7dff] to-[#6556d9] text-white shadow-[0_6px_18px_rgba(108,93,216,0.2)]">
+                <SparkleIcon size={23} />
+              </div>
+
+              <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8173e7]">
+                Stay connected
               </p>
 
-              <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-                자료를 찾는 일에서
+              <h2 className="mt-4 text-[29px] font-semibold leading-[1.4] tracking-[-1.4px] sm:text-[38px] sm:tracking-[-1.8px]">
+                더 나은 업무 흐름을
                 <br />
-                업무를 진행하는 일로.
+                가장 먼저 만나보세요.
               </h2>
 
-              <p className="mt-5 leading-8 text-slate-500">
-                흩어진 자료를 다시 확인하는 대신, 필요한 정보를 질문하고
-                관련된 자료를 확인하는 과정을 체험해 보세요.
+              <p className="mt-4 max-w-[390px] text-[12px] leading-[1.95] text-[#858395] sm:text-[13px]">
+                업무에서 겪는 불편을 어떻게 줄일 수 있을지 함께 살펴봐요.
+                업데이트와 관련 소식을 이메일로 전해드릴게요.
               </p>
 
-              <div className="mt-8 space-y-5">
+              <div className="mt-7 space-y-3">
                 {[
-                  {
-                    title: "찾고 싶은 내용을 질문하세요",
-                    desc: "어떤 정보가 필요한지 구체적으로 정리합니다.",
-                  },
-                  {
-                    title: "관련 자료와 답변을 확인하세요",
-                    desc: "답변과 함께 참고 자료를 확인하는 경험을 제공합니다.",
-                  },
-                  {
-                    title: "결과를 다음 업무에 활용하세요",
-                    desc: "찾은 정보를 보고, 검토, 후속 업무에 활용할 수 있습니다.",
-                  },
-                ].map((item, index) => (
-                  <div key={item.title} className="flex gap-4">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-sm font-bold text-indigo-600">
-                      {index + 1}
-                    </div>
-
-                    <div>
-                      <h3 className="font-bold">{item.title}</h3>
-                      <p className="mt-1 text-sm leading-6 text-slate-500">
-                        {item.desc}
-                      </p>
-                    </div>
+                  "관심 직무에 맞는 소식",
+                  "새로운 업무 활용 사례",
+                  "서비스 업데이트 안내",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-2.5 text-[12px] text-[#77758a]"
+                  >
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#eeebff] text-[#7668e0]">
+                      <CheckIcon size={12} />
+                    </span>
+                    {item}
                   </div>
                 ))}
               </div>
-
-              <button
-                type="button"
-                onClick={startDemo}
-                className="mt-8 w-full rounded-xl bg-indigo-600 px-6 py-4 font-semibold text-white transition hover:bg-indigo-700 sm:w-auto"
-              >
-                직접 경험해 보기 →
-              </button>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:p-8">
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
-                <div className="flex items-center gap-3 border-b border-slate-100 pb-5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg text-white">
-                    ✳
+            <div className="border-t border-[#eeecf5] bg-white/60 p-7 sm:p-10 lg:border-l lg:border-t-0 lg:p-12">
+              {submitSuccess ? (
+                <div className="flex h-full min-h-[330px] flex-col items-center justify-center text-center gather-fade-up">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#e8f7ef] text-[#42976c]">
+                    <CheckIcon size={30} />
                   </div>
 
+                  <h3 className="mt-6 text-[21px] font-semibold tracking-[-0.8px]">
+                    신청이 완료됐어요.
+                  </h3>
+
+                  <p className="mt-3 max-w-[270px] text-[12px] leading-[1.9] text-[#898799]">
+                    관심을 가져 주셔서 감사합니다.
+                    <br />
+                    새로운 소식이 있으면 이메일로 전해드릴게요.
+                  </p>
+                </div>
+              ) : (
+                <>
                   <div>
-                    <p className="font-bold">자료 탐색 예시</p>
-                    <p className="mt-1 text-xs text-slate-400">
-                      업무 자료를 바탕으로 질문하기
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-5 rounded-xl bg-slate-50 p-4">
-                  <p className="text-xs text-slate-400">내 질문</p>
-                  <p className="mt-2 text-sm font-medium leading-6">
-                    &ldquo;지난 회의에서 정한 후속 조치가 뭐였지?&rdquo;
-                  </p>
-                </div>
-
-                <div className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
-                  <p className="text-xs font-semibold text-indigo-600">
-                    답변 예시
-                  </p>
-
-                  <p className="mt-2 text-sm leading-7 text-slate-700">
-                    회의록에서 정리된 할 일을 확인하고, 담당자와 후속
-                    조치를 다시 살펴볼 수 있습니다.
-                  </p>
-
-                  <div className="mt-4 rounded-lg bg-white p-3 text-xs text-slate-500">
-                    ▤ 마케팅 주간 회의록.docx
-                  </div>
-                </div>
-
-                <p className="mt-4 text-xs leading-5 text-slate-400">
-                  실제 제품 연동이 아닌 UI 예시입니다. 답변과 자료는
-                  데모용으로 구성했습니다.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* 체험 영역 */}
-      <section
-        id="demo"
-        ref={demoRef}
-        className={`relative scroll-mt-20 ${
-          demoCompleted ? "" : "min-h-[125vh]"
-        }`}
-        aria-labelledby="demo-title"
-      >
-        <div className="sticky top-16 flex min-h-[calc(100dvh-4rem)] items-center py-5 sm:top-16 sm:py-8">
-          <div className="mx-auto w-full max-w-5xl px-4 sm:px-8">
-            <div
-              className={`overflow-hidden rounded-2xl border bg-white shadow-2xl transition-all duration-500 sm:rounded-3xl ${
-                demoFocused
-                  ? "relative z-20 border-indigo-200 shadow-indigo-200/50 ring-4 ring-indigo-100/70"
-                  : "border-slate-200 shadow-slate-200/50"
-              }`}
-            >
-              <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3 sm:px-7 sm:py-4">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-600 font-bold text-white">
-                    D
-                  </div>
-
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-bold sm:text-base">
-                      자료 탐색 워크스페이스
-                    </p>
-                    <p className="mt-0.5 text-xs text-slate-400">
-                      가상의 마케팅팀 업무 공간
-                    </p>
-                  </div>
-                </div>
-
-                <span className="shrink-0 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
-                  DEMO MODE
-                </span>
-              </div>
-
-              <div className="p-4 sm:p-7">
-                <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
-                  <div>
-                    <p className="text-xs font-bold tracking-wide text-indigo-600">
-                      STEP 01 · ASK
-                    </p>
-
-                    <h2
-                      id="demo-title"
-                      className="mt-2 text-xl font-bold sm:text-2xl"
-                    >
-                      어떤 정보가 필요하세요?
-                    </h2>
-
-                    <p className="mt-2 text-sm leading-6 text-slate-500">
-                      질문을 선택하면 관련 답변과 참고 자료를 확인할 수
-                      있어요.
-                    </p>
-                  </div>
-
-                  <span className="text-xs text-slate-400">
-                    예시 자료 3개
-                  </span>
-                </div>
-
-                <div className="mb-5 grid gap-2 sm:grid-cols-3">
-                  {documents.map((doc) => (
-                    <div
-                      key={doc.id}
-                      className="flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3"
-                    >
-                      <span
-                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[9px] font-bold ${doc.color}`}
-                      >
-                        {doc.type}
-                      </span>
-
-                      <span className="min-w-0 truncate text-xs font-medium text-slate-600">
-                        {doc.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid gap-2 md:grid-cols-3">
-                  {questions.map((question, index) => (
-                    <button
-                      key={question.label}
-                      type="button"
-                      onClick={() => setSelectedQuestion(index)}
-                      className={`flex min-h-16 items-center justify-between gap-3 rounded-xl border p-3 text-left text-sm transition sm:p-4 ${
-                        selectedQuestion === index
-                          ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
-                          : "border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/40"
-                      }`}
-                    >
-                      <span className="font-medium">
-                        {question.label}
-                      </span>
-                      <span className="shrink-0 text-lg">→</span>
-                    </button>
-                  ))}
-                </div>
-
-                {activeQuestion ? (
-                  <div className="mt-4 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 sm:p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-xs font-bold text-indigo-700">
-                        STEP 02 · RESULT
-                      </p>
-                      <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-500">
-                        데모 답변
-                      </span>
-                    </div>
-
-                    <h3 className="mt-3 font-bold">
-                      {activeQuestion.label}
+                    <h3 className="text-[17px] font-semibold tracking-[-0.5px]">
+                      소식 받아보기
                     </h3>
-
-                    <p className="mt-2 text-sm leading-7 text-slate-700">
-                      {activeQuestion.answer}
+                    <p className="mt-2 text-[11px] leading-5 text-[#9694a5]">
+                      이메일과 관심 직무를 입력해 주세요.
                     </p>
+                  </div>
 
-                    <div className="mt-3 rounded-xl border border-indigo-100 bg-white p-3 sm:p-4">
-                      <p className="text-xs font-semibold text-slate-400">
-                        참고 자료
-                      </p>
+                  <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="mb-2 block text-[11px] font-semibold text-[#575568]"
+                      >
+                        이메일
+                        <span className="ml-1 text-[#8374eb]">*</span>
+                      </label>
 
-                      <p className="mt-2 break-words text-sm font-semibold text-indigo-700">
-                        ▤ {activeQuestion.source}
-                      </p>
-
-                      <p className="mt-1 text-xs leading-5 text-slate-500">
-                        {activeQuestion.detail}
-                      </p>
-
-                      <p className="mt-2 border-t border-slate-100 pt-2 text-xs leading-5 text-slate-400">
-                        {activeQuestion.note}
-                      </p>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="name@example.com"
+                        className="h-[47px] w-full rounded-[12px] border border-[#e9e7f0] bg-white px-4 text-[12px] text-[#39374b] outline-none transition placeholder:text-[#b5b3c1] focus:border-[#a79bf5] focus:ring-4 focus:ring-[#8173e7]/10"
+                      />
                     </div>
 
-                    <p className="mt-3 text-xs leading-5 text-slate-500">
-                      미리 작성한 데모 콘텐츠입니다. 실제 파일 분석이나
-                      AI 생성 결과는 아닙니다.
-                    </p>
-                  </div>
-                ) : (
-                  <p className="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
-                    위 질문 중 하나를 선택해 답변과 참고 자료를 확인해
-                    보세요.
-                  </p>
-                )}
+                    <div>
+                      <label
+                        htmlFor="jobCategory"
+                        className="mb-2 block text-[11px] font-semibold text-[#575568]"
+                      >
+                        관심 직무
+                        <span className="ml-1 text-[#8374eb]">*</span>
+                      </label>
 
-                <div className="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs leading-5 text-slate-400">
-                    {demoFocused
-                      ? "체험 영역에 집중할 수 있도록 주변 화면을 흐리게 표시하고 있어요."
-                      : "스크롤을 내려 체험을 시작해 보세요."}
-                  </p>
-
-                  <button
-                    type="button"
-                    onClick={finishDemo}
-                    disabled={selectedQuestion === null}
-                    className="w-full rounded-xl bg-indigo-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 sm:w-auto"
-                  >
-                    체험 완료하고 의견 남기기 →
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 연락처 입력 및 Supabase 저장 */}
-      <section
-        id="contact"
-        ref={contactRef}
-        className={`scroll-mt-20 bg-indigo-50/50 py-16 transition-[filter,opacity] duration-500 sm:py-24 ${
-          demoFocused
-            ? "pointer-events-none select-none blur-sm opacity-45"
-            : "blur-0 opacity-100"
-        }`}
-      >
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:gap-12">
-          <div>
-            <p className="text-sm font-bold text-indigo-600">
-              WHAT ABOUT YOUR WORK?
-            </p>
-
-            <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-              당신의 업무에서는
-              <br />
-              어떤 자료를 찾고 있나요?
-            </h2>
-
-            <p className="mt-5 max-w-lg leading-8 text-slate-500">
-              자료를 찾는 데 얼마나 많은 시간이 필요한지, 어떤 업무에서
-              불편함을 느끼는지 알려주세요. 더 나은 업무 경험을 설계하는
-              데 활용하겠습니다.
-            </p>
-
-            <div className="mt-7 space-y-4 text-sm text-slate-600 sm:mt-8">
-              <p className="flex items-start gap-3">
-                <span className="font-bold text-indigo-600">01</span>
-                현재 업무에서 겪는 불편함을 파악합니다.
-              </p>
-
-              <p className="flex items-start gap-3">
-                <span className="font-bold text-indigo-600">02</span>
-                어떤 해결 방법이 실제로 필요한지 알아봅니다.
-              </p>
-
-              <p className="flex items-start gap-3">
-                <span className="font-bold text-indigo-600">03</span>
-                향후 체험 및 사용자 인터뷰 기회를 안내할 수 있습니다.
-              </p>
-            </div>
-          </div>
-
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl shadow-indigo-100/50 sm:p-9">
-            {submitted ? (
-              <div className="py-10 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-2xl text-emerald-600">
-                  ✓
-                </div>
-
-                <h3 className="mt-5 text-xl font-bold">
-                  신청이 완료됐어요!
-                </h3>
-
-                <p className="mt-3 text-sm leading-7 text-slate-500">
-                  소중한 의견 감사합니다.
-                  <br />
-                  체험 및 인터뷰 소식이 준비되면 안내해 드릴게요.
-                </p>
-              </div>
-            ) : (
-              <>
-                <h3 className="text-xl font-bold">
-                  체험 및 인터뷰 소식 받기
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  아래 정보를 입력해 주세요.
-                </p>
-
-                <form
-                  onSubmit={handleSubmit}
-                  className="mt-7 space-y-5"
-                >
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="mb-2 block text-sm font-semibold"
-                    >
-                      이메일
-                    </label>
-
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      maxLength={254}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="work@example.com"
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3.5 text-base outline-none transition placeholder:text-slate-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="job"
-                      className="mb-2 block text-sm font-semibold"
-                    >
-                      현재 담당하는 업무
-                    </label>
-
-                    <select
-                      id="job"
-                      name="job"
-                      required
-                      value={job}
-                      onChange={(e) => setJob(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-base outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50"
-                    >
-                      <option value="" disabled>
-                        업무를 선택해 주세요
-                      </option>
-
-                      {jobOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="flex items-start gap-3 text-xs leading-5 text-slate-500">
-                      <input
-                        name="privacyConsent"
-                        type="checkbox"
+                      <select
+                        id="jobCategory"
+                        name="job_category"
                         required
-                        checked={privacyConsent}
-                        onChange={(e) =>
-                          setPrivacyConsent(e.target.checked)
+                        value={jobCategory}
+                        onChange={(event) =>
+                          setJobCategory(event.target.value)
                         }
-                        className="mt-1 accent-indigo-600"
-                      />
+                        className={`h-[47px] w-full rounded-[12px] border border-[#e9e7f0] bg-white px-4 text-[12px] outline-none transition focus:border-[#a79bf5] focus:ring-4 focus:ring-[#8173e7]/10 ${
+                          jobCategory ? "text-[#39374b]" : "text-[#b5b3c1]"
+                        }`}
+                      >
+                        <option value="" disabled>
+                          관심 있는 직무를 선택해 주세요
+                        </option>
+                        {jobCategories.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                      <span>
-                        수요 검증 및 안내를 위한 개인정보 수집·이용에
-                        동의합니다.
-                        <br />
-                        <span className="mt-1 block text-slate-400">
-                          수집 항목: 이메일, 현재 담당 업무
+                    <div className="rounded-[12px] border border-[#eeecf5] bg-white/80 p-3.5">
+                      <label
+                        htmlFor="privacyConsent"
+                        className="flex cursor-pointer items-start gap-2.5"
+                      >
+                        <input
+                          id="privacyConsent"
+                          name="privacy_consent"
+                          type="checkbox"
+                          required
+                          checked={privacyConsent}
+                          onChange={(event) =>
+                            setPrivacyConsent(event.target.checked)
+                          }
+                          className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-[#7163e8]"
+                        />
+
+                        <span className="text-[10px] leading-[1.8] text-[#79778b]">
+                          <span className="font-semibold text-[#555368]">
+                            [필수] 개인정보 수집 및 이용에 동의합니다.
+                          </span>
                           <br />
-                          이용 목적: 수요 검증 및 체험·인터뷰 안내
+                          수집 항목: 이메일, 관심 직무
                           <br />
-                          보유 기간: 실제 운영 전 확정하여 별도 안내
+                          이용 목적: 서비스 관련 소식 및 업데이트 안내
+                          <br />
+                          보유 기간: 수집 목적 달성 후 파기
                         </span>
-                      </span>
-                    </label>
-                  </div>
+                      </label>
+                    </div>
 
-                  {submitError && (
-                    <p
-                      role="alert"
-                      aria-live="polite"
-                      className="rounded-xl bg-rose-50 px-4 py-3 text-sm leading-6 text-rose-700"
+                    {submitMessage && (
+                      <p
+                        role="status"
+                        className={`text-[11px] leading-5 ${
+                          submitSuccess ? "text-[#32835c]" : "text-[#c65f6d]"
+                        }`}
+                      >
+                        {submitMessage}
+                      </p>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="group flex h-[49px] w-full items-center justify-center gap-2 rounded-full bg-[#7163e8] text-[12px] font-semibold text-white shadow-[0_7px_20px_rgba(113,99,232,0.18)] transition hover:bg-[#6152db] disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {submitError}
+                      {submitting ? "신청 중..." : "소식 받아보기"}
+                      {!submitting && <ArrowRight size={15} />}
+                    </button>
+
+                    <p className="text-center text-[10px] leading-5 text-[#aaa8b6]">
+                      필수 항목을 입력하고 개인정보 수집 및 이용에 동의하면
+                      신청할 수 있습니다.
                     </p>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full rounded-xl bg-indigo-600 px-5 py-4 font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isSubmitting
-                      ? "신청 정보를 저장하고 있어요..."
-                      : "체험 소식 받기 →"}
-                  </button>
-
-                  <p className="text-center text-xs leading-5 text-slate-400">
-                    입력하신 정보는 안내 및 수요 검증 목적으로 활용됩니다.
-                  </p>
-                </form>
-              </>
-            )}
+                  </form>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 하단 */}
-      <footer
-        className={`border-t border-slate-100 bg-white transition-[filter,opacity] duration-500 ${
-          demoFocused
-            ? "pointer-events-none select-none blur-sm opacity-45"
-            : "blur-0 opacity-100"
-        }`}
-      >
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-7 sm:px-8 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">
-              D
+      {/* Footer */}
+      <footer className="border-t border-[#ebe9f2] bg-white/50 px-5 py-7 sm:px-8 lg:px-12">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <a href="#home" className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-[9px] bg-gradient-to-br from-[#8577ff] to-[#5546d8] text-white">
+              <SparkleIcon size={16} />
             </div>
-            <span className="font-bold">자료캐치</span>
-          </div>
+            <span className="text-[16px] font-semibold tracking-[-0.6px]">
+              gather
+            </span>
+          </a>
 
-          <p className="text-xs leading-6 text-slate-400">
-            더 나은 업무 자료 탐색 경험을 위한 수요 검증 프로젝트
+          <p className="text-[10px] leading-5 text-[#aaa8b7]">
+            Make room for the work that matters.
           </p>
 
-          <p className="text-xs text-slate-400">
-            © 2026 DATA CATCH
-          </p>
+          <a
+            href="#home"
+            className="text-[11px] font-medium text-[#858296] transition hover:text-[#6f60dc]"
+          >
+            Back to top ↑
+          </a>
         </div>
       </footer>
     </main>
