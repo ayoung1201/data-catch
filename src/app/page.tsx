@@ -9,25 +9,52 @@ import { supabase } from "@/lib/supabase";
 
 function ArrowRight({ size = 18 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M5 12h14" />
       <path d="m12 5 7 7-7 7" />
     </svg>
   );
 }
 
-function ArrowDown({ size = 18 }: { size?: number }) {
+function ArrowLeft({ size = 18 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 5v14" />
-      <path d="m19 12-7 7-7-7" />
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19 12H5" />
+      <path d="m12 19-7-7 7-7" />
     </svg>
   );
 }
 
 function CheckIcon({ size = 18 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="m5 12 4 4L19 6" />
     </svg>
   );
@@ -35,7 +62,16 @@ function CheckIcon({ size = 18 }: { size?: number }) {
 
 function SparkleIcon({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="m12 3 1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3Z" />
       <path d="m19 14 1.2 2.8L23 18l-2.8 1.2L19 22l-1.2-2.8L15 18l2.8-1.2L19 14Z" />
     </svg>
@@ -44,7 +80,16 @@ function SparkleIcon({ size = 20 }: { size?: number }) {
 
 function DocumentIcon({ size = 22 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
       <path d="M14 2v6h6" />
       <path d="M8 13h8" />
@@ -55,7 +100,16 @@ function DocumentIcon({ size = 22 }: { size?: number }) {
 
 function SearchIcon({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="11" cy="11" r="7" />
       <path d="m20 20-4-4" />
     </svg>
@@ -64,7 +118,16 @@ function SearchIcon({ size = 20 }: { size?: number }) {
 
 function CheckCircle({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="12" cy="12" r="9" />
       <path d="m8 12 2.5 2.5L16 9" />
     </svg>
@@ -75,52 +138,75 @@ function CheckCircle({ size = 20 }: { size?: number }) {
 /* Demo data                                                                  */
 /* -------------------------------------------------------------------------- */
 
-const demoDocuments = [
+type DemoResult = {
+  id: string;
+  type: "자료" | "미팅";
+  fileName: string;
+  folder: string;
+  date: string;
+  page?: number;
+  title: string;
+  excerpt: string;
+};
+
+const demoResults: DemoResult[] = [
   {
-    id: "feedback",
-    name: "고객 피드백 정리.pdf",
-    pages: 12,
-    type: "고객 데이터",
+    id: "intro",
+    type: "자료",
+    fileName: "회사 소개서.pdf",
+    folder: "사업 기획",
+    date: "2026.10.12",
+    page: 3,
+    title: "주요 도입 사례",
+    excerpt:
+      "다양한 산업군의 고객사가 서비스를 도입하여 업무 처리 시간을 단축했습니다. 도입 이후 반복 업무를 줄이고 필요한 정보를 빠르게 확인할 수 있었습니다.",
   },
   {
     id: "guide",
-    name: "마케팅 운영 가이드.pdf",
-    pages: 18,
-    type: "운영 문서",
+    type: "자료",
+    fileName: "마케팅 운영 가이드.pdf",
+    folder: "마케팅팀",
+    date: "2026.10.10",
+    page: 7,
+    title: "고객사 도입 시 운영 기준",
+    excerpt:
+      "도입 초기에는 담당자 교육과 단계별 운영 가이드를 함께 제공하는 것이 중요합니다. 운영 과정에서 확인된 고객 의견을 수집해 개선 사항을 반영합니다.",
   },
   {
-    id: "service",
-    name: "서비스 소개서.pdf",
-    pages: 9,
-    type: "기획 문서",
+    id: "meeting",
+    type: "미팅",
+    fileName: "ABC파트너스 미팅",
+    folder: "파트너사 미팅",
+    date: "2026.10.12",
+    title: "도입 사례 및 운영 프로세스 논의",
+    excerpt:
+      "서비스 도입 사례를 공유하고 초기 운영 프로세스와 담당자 교육에 필요한 사항을 논의했습니다.",
   },
 ];
-
-const demoResults = {
-  feedback: {
-    fileName: "고객 피드백 정리.pdf",
-    page: 3,
-    title: "가입 과정에서 반복적으로 언급된 불편",
-    excerpt:
-      "가입 과정에서 본인 인증 절차가 복잡하고, 다음 단계로 넘어가는 방법을 이해하기 어렵다는 의견이 반복적으로 확인되었습니다.",
-  },
-  guide: {
-    fileName: "마케팅 운영 가이드.pdf",
-    page: 5,
-    title: "가입 절차 개선 시 확인할 운영 기준",
-    excerpt:
-      "가입 과정의 변경 사항을 검토할 때는 고객 인증 절차, 단계별 안내 문구, 가입 완료 기준을 함께 확인합니다.",
-  },
-};
 
 /* -------------------------------------------------------------------------- */
 /* Page                                                                       */
 /* -------------------------------------------------------------------------- */
 
 export default function Home() {
-  const [demoStep, setDemoStep] = useState<1 | 2>(1);
-  const [showFollowUp, setShowFollowUp] = useState(false);
+  // Demo state
+  const [demoView, setDemoView] = useState<"search" | "detail" | "chat">(
+    "search"
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<"자료" | "미팅">("자료");
+  const [searchSubmitted, setSearchSubmitted] = useState(false);
+  const [selectedResult, setSelectedResult] = useState<DemoResult | null>(
+    null
+  );
+  const [chatQuestion, setChatQuestion] = useState("");
+  const [chatAnswerVisible, setChatAnswerVisible] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [followUpQuestion, setFollowUpQuestion] = useState("");
+  const [followUpVisible, setFollowUpVisible] = useState(false);
+  const [followUpLoading, setFollowUpLoading] = useState(false);
 
+  // Signup state
   const [email, setEmail] = useState("");
   const [jobCategory, setJobCategory] = useState("");
   const [privacyConsent, setPrivacyConsent] = useState(false);
@@ -144,6 +230,81 @@ export default function Home() {
       behavior: "smooth",
       block: "start",
     });
+  };
+
+  const scrollToExperience = () => {
+    document.getElementById("experience")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const resetDemo = () => {
+    setDemoView("search");
+    setSearchQuery("");
+    setActiveTab("자료");
+    setSearchSubmitted(false);
+    setSelectedResult(null);
+    setChatQuestion("");
+    setChatAnswerVisible(false);
+    setChatLoading(false);
+    setFollowUpQuestion("");
+    setFollowUpVisible(false);
+    setFollowUpLoading(false);
+  };
+
+  const runSearch = (query?: string) => {
+    const nextQuery = (query ?? searchQuery).trim();
+
+    if (!nextQuery) return;
+
+    setSearchQuery(nextQuery);
+    setActiveTab("자료");
+    setSearchSubmitted(true);
+    setDemoView("search");
+    setSelectedResult(null);
+    setChatAnswerVisible(false);
+    setFollowUpVisible(false);
+  };
+
+  const openResult = (result: DemoResult) => {
+    setSelectedResult(result);
+    setDemoView("detail");
+  };
+
+  const startChat = () => {
+    setDemoView("chat");
+    setChatQuestion("");
+    setChatAnswerVisible(false);
+    setChatLoading(false);
+    setFollowUpQuestion("");
+    setFollowUpVisible(false);
+    setFollowUpLoading(false);
+  };
+
+  const sendSampleQuestion = (question: string) => {
+    setChatQuestion(question);
+    setChatLoading(true);
+    setChatAnswerVisible(false);
+    setFollowUpVisible(false);
+
+    window.setTimeout(() => {
+      setChatLoading(false);
+      setChatAnswerVisible(true);
+    }, 700);
+  };
+
+  const sendFollowUp = (question: string) => {
+    if (!question.trim()) return;
+
+    setFollowUpQuestion(question.trim());
+    setFollowUpLoading(true);
+    setFollowUpVisible(false);
+
+    window.setTimeout(() => {
+      setFollowUpLoading(false);
+      setFollowUpVisible(true);
+    }, 700);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -205,17 +366,56 @@ export default function Home() {
     }
   };
 
-  const startDemo = () => {
-    setDemoStep(1);
-    setShowFollowUp(false);
-  };
+  const visibleResults = demoResults.filter((result) => {
+    if (result.type !== activeTab) return false;
+
+    const query = searchQuery.toLowerCase();
+
+    if (!query) return true;
+
+    const searchableText = [
+      result.fileName,
+      result.folder,
+      result.title,
+      result.excerpt,
+      result.type,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    // Sample demo search: keep results discoverable even if a visitor
+    // enters a related term that is not literally present in the excerpt.
+    const relatedTerms: Record<string, string[]> = {
+      "도입 사례": ["도입", "사례", "고객", "서비스", "회사"],
+      "abc파트너스": ["abc", "파트너", "미팅", "도입"],
+      가격: ["가격", "운영", "서비스", "고객"],
+    };
+
+    const normalizedRelatedTerm = Object.keys(relatedTerms).find((term) =>
+      query.includes(term.toLowerCase())
+    );
+
+    if (normalizedRelatedTerm) {
+      const terms = relatedTerms[normalizedRelatedTerm];
+      return (
+        terms.some((term) => searchableText.includes(term)) ||
+        searchableText.includes(query)
+      );
+    }
+
+    return searchableText.includes(query);
+  });
 
   return (
     <main className="min-h-screen bg-[#fafaf9] text-[#202124]">
       {/* Navigation */}
       <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#fafaf9]/85 backdrop-blur-xl">
         <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-6 md:px-10">
-          <a href="#home" className="flex items-center gap-2.5" aria-label="Gather 홈">
+          <a
+            href="#home"
+            className="flex items-center gap-2.5"
+            aria-label="Gather 홈"
+          >
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#252525] text-white">
               <SparkleIcon size={17} />
             </div>
@@ -264,9 +464,7 @@ export default function Home() {
               <br />
               업무 가이드까지.
               <br />
-              <span className="text-[#929292]">
-                필요한 정보만 빠르게.
-              </span>
+              <span className="text-[#929292]">필요한 정보만 빠르게.</span>
             </h1>
 
             <p className="mt-7 max-w-[470px] text-[15px] leading-7 text-[#696969] md:text-[16px]">
@@ -278,11 +476,7 @@ export default function Home() {
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <button
                 type="button"
-                onClick={() =>
-                  document
-                    .getElementById("experience")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
+                onClick={scrollToExperience}
                 className="flex items-center gap-2 rounded-full bg-[#252525] px-6 py-3.5 text-[13px] font-medium text-white transition hover:bg-black"
               >
                 직접 경험해 보기
@@ -321,7 +515,9 @@ export default function Home() {
             <div className="relative rounded-[26px] border border-black/[0.08] bg-white p-5 shadow-[0_24px_80px_rgba(0,0,0,0.06)] md:p-7">
               <div className="flex items-center justify-between border-b border-black/[0.06] pb-5">
                 <div>
-                  <div className="text-[13px] font-semibold">내 업무 자료</div>
+                  <div className="text-[13px] font-semibold">
+                    내 업무 자료
+                  </div>
                   <div className="mt-1 text-[11px] text-[#929292]">
                     흩어진 자료를 한곳에서
                   </div>
@@ -385,7 +581,7 @@ export default function Home() {
                 </div>
                 <div className="mt-3 flex items-center justify-between rounded-xl border border-black/[0.07] bg-white px-3.5 py-3">
                   <span className="text-[11px] text-[#999]">
-                    예: 환불 정책, 고객 요구사항...
+                    예: 도입 사례, 고객 요구사항...
                   </span>
                   <ArrowRight size={15} />
                 </div>
@@ -473,13 +669,13 @@ export default function Home() {
           </h2>
 
           <p className="mx-auto mt-5 max-w-[560px] text-[14px] leading-7 text-[#777] md:text-[15px]">
-            찾고 싶은 내용을 입력하고 관련된 정보를 확인하세요.
+            먼저 필요한 자료를 찾고, 더 궁금한 내용은 AI에게 물어보세요.
             <br className="hidden md:block" />
-            중요한 것은 자료의 양이 아니라, 필요한 맥락에 빠르게 도달하는 일입니다.
+            검색부터 내용 확인까지 하나의 흐름으로 이어집니다.
           </p>
 
           <div className="mt-8 flex justify-center text-[#999]">
-            <ArrowDown size={20} />
+            <ArrowRight size={20} />
           </div>
         </div>
       </section>
@@ -496,13 +692,13 @@ export default function Home() {
             </p>
 
             <h2 className="text-[30px] font-semibold tracking-[-1.4px] md:text-[42px]">
-              필요한 정보, 자료 속에서 찾아보세요.
+              필요한 정보, 직접 찾아보세요.
             </h2>
 
             <p className="mt-4 text-[14px] leading-7 text-[#777] md:text-[15px]">
-              여러 업무 자료를 하나씩 열어보는 대신,
+              자료를 검색하고, 원하는 내용을 확인한 다음
               <br className="hidden md:block" />
-              질문을 통해 관련 내용과 근거 자료를 확인해 보세요.
+              AI와 대화하며 내용을 더 깊이 살펴볼 수 있어요.
             </p>
           </div>
 
@@ -511,214 +707,482 @@ export default function Home() {
             <div className="flex items-center justify-between border-b border-black/[0.07] bg-[#fafaf9] px-5 py-4 md:px-7">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#252525] text-white">
-                  <SearchIcon size={17} />
+                  {demoView === "chat" ? (
+                    <SparkleIcon size={17} />
+                  ) : (
+                    <SearchIcon size={17} />
+                  )}
                 </div>
 
                 <div>
                   <div className="text-[13px] font-semibold">
-                    업무 자료 검색
+                    {demoView === "chat"
+                      ? "자료와 대화하기"
+                      : demoView === "detail"
+                        ? "자료 상세"
+                        : "업무 자료 검색"}
                   </div>
                   <div className="mt-0.5 text-[10px] text-[#888]">
-                    검색부터 근거 확인까지
+                    {demoView === "chat"
+                      ? "연결된 자료를 바탕으로 질문하기"
+                      : "검색부터 근거 확인까지"}
                   </div>
                 </div>
               </div>
 
               <span className="rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-[10px] text-[#777]">
-                Interactive demo
+                체험용 예시
               </span>
             </div>
 
-            <div className="p-5 md:p-8">
-              {/* Documents */}
-              <div className="mb-7">
-                <div className="mb-3 text-[12px] font-semibold">
-                  연결된 업무 자료
-                </div>
+            <div
+              key={demoView}
+              className="demo-fade-in p-5 md:p-8"
+              aria-live="polite"
+            >
+              {/* STEP 1: Search */}
+              {demoView === "search" && (
+                <>
+                  <div className="mb-5">
+                    <div className="mb-3 text-[12px] font-semibold">
+                      어떤 내용을 찾고 있나요?
+                    </div>
 
-                <div className="space-y-2">
-                  {demoDocuments.map((document) => (
-                    <div
-                      key={document.id}
-                      className="flex items-center gap-3 rounded-xl border border-black/[0.06] p-3"
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        runSearch();
+                      }}
+                      className="flex items-center gap-2 rounded-xl border border-black/[0.12] bg-white p-2 pl-3.5 transition focus-within:border-black/[0.3]"
                     >
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f5f5f3] text-[#666]">
-                        <DocumentIcon size={18} />
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate text-[12px] font-medium">
-                          {document.name}
-                        </div>
-                        <div className="mt-1 text-[10px] text-[#999]">
-                          {document.pages}페이지 · {document.type}
-                        </div>
-                      </div>
-
-                      <span className="text-[#63816a]">
-                        <CheckCircle size={17} />
+                      <span className="shrink-0 text-[#888]">
+                        <SearchIcon size={18} />
                       </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* First question */}
-              <div className="border-t border-black/[0.07] pt-6">
-                <div className="mb-3 text-[12px] font-semibold">
-                  01. 무엇이 궁금하신가요?
-                </div>
+                      <input
+                        value={searchQuery}
+                        onChange={(event) =>
+                          setSearchQuery(event.target.value)
+                        }
+                        placeholder="예: 도입 사례"
+                        className="h-10 min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:text-[#aaa]"
+                        aria-label="검색어"
+                      />
 
-                <button
-                  type="button"
-                  onClick={startDemo}
-                  className="w-full rounded-xl border border-black/[0.09] bg-[#fafaf9] p-4 text-left transition hover:border-black/[0.2]"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 text-[#777]">
-                      <SearchIcon size={17} />
-                    </div>
+                      <button
+                        type="submit"
+                        className="flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-[#252525] px-3.5 text-[11px] font-medium text-white transition hover:bg-black"
+                      >
+                        검색
+                        <ArrowRight size={14} />
+                      </button>
+                    </form>
 
-                    <div>
-                      <div className="text-[12px] font-medium leading-5">
-                        고객들이 가장 많이 불편해한 부분은 뭐였지?
-                      </div>
-                      <div className="mt-1 text-[10px] text-[#999]">
-                        예시 질문을 선택해 결과를 확인하세요.
-                      </div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] text-[#999]">
+                        추천 검색어
+                      </span>
+                      {["도입 사례", "ABC파트너스", "가격"].map((term) => (
+                        <button
+                          key={term}
+                          type="button"
+                          onClick={() => runSearch(term)}
+                          className="rounded-full border border-black/[0.08] bg-[#fafaf9] px-3 py-1.5 text-[10px] text-[#666] transition hover:border-black/[0.2] hover:bg-[#f2f2f0]"
+                        >
+                          {term}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                </button>
-              </div>
 
-              {/* First result */}
-              {demoStep === 1 && (
-                <div className="mt-5 overflow-hidden rounded-2xl border border-[#dfe8df] bg-[#fbfdfb]">
-                  <div className="flex items-center gap-2 border-b border-[#e6ece6] px-4 py-3.5">
-                    <span className="text-[#63816a]">
-                      <CheckCircle size={18} />
-                    </span>
-                    <span className="text-[12px] font-semibold">
-                      관련 자료를 찾았어요
-                    </span>
-                  </div>
-
-                  <div className="p-4 md:p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#666]">
-                        <DocumentIcon size={20} />
-                      </div>
-
-                      <div className="min-w-0 flex-1">
+                  {searchSubmitted && (
+                    <div className="demo-fade-in border-t border-black/[0.07] pt-5">
+                      <div className="flex items-center justify-between gap-3">
                         <div className="text-[12px] font-semibold">
-                          {demoResults.feedback.fileName}
+                          검색 결과
                         </div>
-
-                        <div className="mt-1.5 inline-flex rounded-md bg-[#edf3ed] px-2 py-1 text-[10px] text-[#57735c]">
-                          출처 · {demoResults.feedback.page}페이지
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 rounded-xl border border-black/[0.06] bg-white p-4">
-                      <div className="mb-2 text-[10px] font-medium text-[#999]">
-                        {demoResults.feedback.title}
+                        <span className="text-[10px] text-[#999]">
+                          &apos;{searchQuery}&apos; 검색
+                        </span>
                       </div>
 
-                      <p className="text-[12px] leading-7 text-[#4e4e4e]">
-                        {demoResults.feedback.excerpt}
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowFollowUp((previous) => !previous)}
-                      className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#252525] px-4 py-3.5 text-[12px] font-medium text-white transition hover:bg-black"
-                    >
-                      {showFollowUp
-                        ? "후속 질문 닫기"
-                        : "관련 운영 기준까지 확인하기"}
-                      <ArrowRight size={15} />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Follow-up question and result */}
-              {showFollowUp && (
-                <div className="mt-5">
-                  <div className="mb-3 text-[12px] font-semibold">
-                    02. 관련 자료까지 살펴볼까요?
-                  </div>
-
-                  <div className="rounded-xl border border-black/[0.09] bg-[#fafaf9] p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 text-[#777]">
-                        <SparkleIcon size={17} />
+                      <div className="mt-4 flex gap-5 border-b border-black/[0.07]">
+                        {(["미팅", "자료"] as const).map((tab) => (
+                          <button
+                            key={tab}
+                            type="button"
+                            onClick={() => setActiveTab(tab)}
+                            className={`relative pb-3 text-[12px] transition ${
+                              activeTab === tab
+                                ? "font-semibold text-[#252525]"
+                                : "text-[#999] hover:text-[#555]"
+                            }`}
+                          >
+                            {tab}
+                            {activeTab === tab && (
+                              <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-[#252525]" />
+                            )}
+                          </button>
+                        ))}
                       </div>
 
-                      <p className="text-[12px] leading-6">
-                        이 문제를 개선하려면 운영 가이드에서 어떤 기준을 확인해야 할까?
-                      </p>
-                    </div>
-                  </div>
+                      <div className="mt-3 space-y-2">
+                        {visibleResults.length > 0 ? (
+                          visibleResults.map((result) => (
+                            <button
+                              key={result.id}
+                              type="button"
+                              onClick={() => openResult(result)}
+                              className="group w-full rounded-xl border border-black/[0.07] p-4 text-left transition hover:border-black/[0.18] hover:bg-[#fafaf9]"
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f5f5f3] text-[#666]">
+                                  <DocumentIcon size={17} />
+                                </div>
 
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-[#dfe8df] bg-[#fbfdfb]">
-                    <div className="flex items-center gap-2 border-b border-[#e6ece6] px-4 py-3.5">
-                      <span className="text-[#63816a]">
-                        <CheckCircle size={18} />
-                      </span>
-                      <span className="text-[12px] font-semibold">
-                        관련 운영 기준
-                      </span>
-                    </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <span className="text-[12px] font-medium">
+                                      {result.fileName}
+                                    </span>
+                                    {result.page && (
+                                      <span className="rounded bg-[#edf3ed] px-2 py-0.5 text-[9px] text-[#57735c]">
+                                        p.{result.page}
+                                      </span>
+                                    )}
+                                  </div>
 
-                    <div className="p-4 md:p-5">
-                      <p className="text-[12px] leading-7 text-[#4e4e4e]">
-                        가입 과정의 불편을 줄이려면 고객 인증 절차와 단계별 안내
-                        문구, 가입 완료 기준을 함께 확인하는 것이 좋습니다.
-                      </p>
+                                  <div className="mt-1.5 text-[11px] font-medium text-[#666]">
+                                    {result.title}
+                                  </div>
 
-                      <div className="mt-4 rounded-xl border border-black/[0.06] bg-white p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="shrink-0 text-[#666]">
-                            <DocumentIcon size={19} />
-                          </div>
+                                  <p className="mt-1.5 line-clamp-2 text-[11px] leading-5 text-[#888]">
+                                    {result.excerpt}
+                                  </p>
 
-                          <div className="min-w-0 flex-1">
-                            <div className="text-[12px] font-semibold">
-                              {demoResults.guide.fileName}
-                            </div>
+                                  <div className="mt-2 text-[10px] text-[#aaa]">
+                                    {result.folder} · {result.date}
+                                  </div>
+                                </div>
 
-                            <div className="mt-1.5 inline-flex rounded-md bg-[#edf3ed] px-2 py-1 text-[10px] text-[#57735c]">
-                              출처 · {demoResults.guide.page}페이지
-                            </div>
-
-                            <p className="mt-3 text-[11px] leading-6 text-[#777]">
-                              {demoResults.guide.excerpt}
+                                <span className="mt-1 shrink-0 text-[#aaa] transition group-hover:translate-x-0.5 group-hover:text-[#555]">
+                                  <ArrowRight size={15} />
+                                </span>
+                              </div>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="rounded-xl bg-[#fafaf9] px-4 py-8 text-center">
+                            <p className="text-[12px] text-[#777]">
+                              일치하는 예시 결과가 없어요.
+                            </p>
+                            <p className="mt-2 text-[10px] text-[#999]">
+                              추천 검색어를 선택해 체험해 보세요.
                             </p>
                           </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {!searchSubmitted && (
+                    <div className="rounded-xl bg-[#fafaf9] px-4 py-5">
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 text-[#888]">
+                          <SparkleIcon size={17} />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-medium text-[#555]">
+                            검색어를 입력해 보세요.
+                          </p>
+                          <p className="mt-1 text-[10px] leading-5 text-[#999]">
+                            미팅 기록과 자료에서 필요한 내용을 찾아볼 수 있어요.
+                          </p>
                         </div>
                       </div>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* STEP 2: Document detail */}
+              {demoView === "detail" && selectedResult && (
+                <div className="demo-fade-in">
+                  <button
+                    type="button"
+                    onClick={() => setDemoView("search")}
+                    className="mb-5 flex items-center gap-2 text-[11px] text-[#777] transition hover:text-black"
+                  >
+                    <ArrowLeft size={15} />
+                    검색 결과로 돌아가기
+                  </button>
+
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#f5f5f3] text-[#666]">
+                      <DocumentIcon size={21} />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <h3 className="break-words text-[14px] font-semibold">
+                        {selectedResult.fileName}
+                      </h3>
+                      <p className="mt-1 text-[10px] text-[#999]">
+                        {selectedResult.folder} · {selectedResult.date}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 rounded-2xl border border-[#e3e9e2] bg-[#fbfdfb] p-5 md:p-6">
+                    <div className="flex items-center gap-2 text-[11px] font-medium text-[#57735c]">
+                      <CheckCircle size={17} />
+                      찾은 구절
+                      {selectedResult.page && (
+                        <span className="rounded-md bg-[#edf3ed] px-2 py-1 text-[10px]">
+                          p.{selectedResult.page}
+                        </span>
+                      )}
+                    </div>
+
+                    <h4 className="mt-4 text-[13px] font-semibold">
+                      {selectedResult.title}
+                    </h4>
+
+                    <p className="mt-3 text-[12px] leading-7 text-[#555]">
+                      {selectedResult.excerpt}
+                    </p>
+                  </div>
+
+                  {selectedResult.type === "자료" ? (
+                    <div className="mt-5">
+                      <p className="mb-3 text-[11px] text-[#888]">
+                        이 자료에 대해 더 알아보고 싶다면
+                      </p>
 
                       <button
                         type="button"
-                        onClick={scrollToSignup}
-                        className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-black/[0.1] bg-white px-4 py-3.5 text-[12px] font-medium transition hover:bg-[#f5f5f3]"
+                        onClick={startChat}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#252525] px-4 py-3.5 text-[12px] font-medium text-white transition hover:bg-black"
                       >
-                        Gather 업데이트 소식 받기
+                        <SparkleIcon size={16} />
+                        AI에게 질문하기
                         <ArrowRight size={15} />
                       </button>
+
+                      <p className="mt-3 text-center text-[10px] leading-5 text-[#999]">
+                        폴더에 연결된 자료를 바탕으로 질문하는 상황을 체험합니다.
+                      </p>
                     </div>
+                  ) : (
+                    <div className="mt-5 rounded-xl bg-[#f7f7f5] p-4">
+                      <p className="text-[11px] leading-6 text-[#777]">
+                        미팅 검색 결과를 확인했어요. AI 대화 체험은 자료 탭에서
+                        문서를 선택해 진행할 수 있어요.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTab("자료");
+                          setDemoView("search");
+                        }}
+                        className="mt-3 flex items-center gap-2 text-[11px] font-medium text-[#555] hover:text-black"
+                      >
+                        자료 검색으로 이동
+                        <ArrowRight size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* STEP 3: AI conversation */}
+              {demoView === "chat" && (
+                <div className="demo-fade-in">
+                  <button
+                    type="button"
+                    onClick={() => setDemoView("detail")}
+                    className="mb-5 flex items-center gap-2 text-[11px] text-[#777] transition hover:text-black"
+                  >
+                    <ArrowLeft size={15} />
+                    자료로 돌아가기
+                  </button>
+
+                  <div className="rounded-xl border border-black/[0.07] bg-[#fafaf9] p-3.5">
+                    <div className="flex items-center gap-2">
+                      <DocumentIcon size={17} />
+                      <span className="text-[11px] font-medium">
+                        {selectedResult?.fileName ?? "회사 소개서.pdf"}
+                      </span>
+                    </div>
+                    <p className="mt-1 pl-6 text-[10px] text-[#999]">
+                      연결된 자료를 바탕으로 대화합니다.
+                    </p>
                   </div>
+
+                  <div className="mt-6">
+                    <div className="mb-3 text-[12px] font-semibold">
+                      무엇이 궁금하신가요?
+                    </div>
+
+                    {!chatQuestion && (
+                      <div className="space-y-2">
+                        {[
+                          "연결된 자료 요약해 줘",
+                          "주요 도입 사례를 정리해 줘",
+                        ].map((question) => (
+                          <button
+                            key={question}
+                            type="button"
+                            onClick={() => sendSampleQuestion(question)}
+                            className="flex w-full items-center justify-between gap-3 rounded-xl border border-black/[0.09] bg-white px-4 py-3.5 text-left text-[12px] transition hover:border-black/[0.2] hover:bg-[#fafaf9]"
+                          >
+                            <span>{question}</span>
+                            <ArrowRight size={15} />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {chatQuestion && (
+                      <div className="space-y-4">
+                        <div className="ml-auto w-fit max-w-[90%] rounded-2xl rounded-br-sm bg-[#252525] px-4 py-3 text-[12px] leading-6 text-white">
+                          {chatQuestion}
+                        </div>
+
+                        {chatLoading && (
+                          <div className="flex items-center gap-3 rounded-xl bg-[#fafaf9] p-4">
+                            <SparkleIcon size={17} />
+                            <div className="flex items-center gap-1.5 text-[11px] text-[#888]">
+                              자료를 살펴보는 중
+                              <span className="typing-dot" />
+                              <span className="typing-dot delay-1" />
+                              <span className="typing-dot delay-2" />
+                            </div>
+                          </div>
+                        )}
+
+                        {chatAnswerVisible && (
+                          <div className="demo-fade-in rounded-2xl border border-black/[0.07] p-4 md:p-5">
+                            <div className="flex items-center gap-2 text-[11px] font-semibold">
+                              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#f2f2ef]">
+                                <SparkleIcon size={15} />
+                              </div>
+                              답변
+                            </div>
+
+                            <p className="mt-4 text-[12px] leading-7 text-[#555]">
+                              연결된 자료를 살펴보면, 주요 도입 사례에서 업무
+                              처리 시간 단축이 언급됩니다. 도입 초기에는 담당자
+                              교육과 단계별 운영 가이드도 중요하게 다뤄집니다.
+                            </p>
+
+                            <div className="mt-4 border-t border-black/[0.06] pt-4">
+                              <div className="mb-2 text-[10px] font-medium text-[#888]">
+                                참고 자료
+                              </div>
+
+                              <div className="flex flex-wrap gap-2">
+                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#f5f5f3] px-2.5 py-2 text-[10px] text-[#666]">
+                                  <DocumentIcon size={13} />
+                                  회사 소개서.pdf · p.3
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#f5f5f3] px-2.5 py-2 text-[10px] text-[#666]">
+                                  <DocumentIcon size={13} />
+                                  마케팅 운영 가이드.pdf · p.7
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="mt-5 border-t border-black/[0.06] pt-4">
+                              <p className="mb-3 text-[11px] font-medium text-[#777]">
+                                이어서 질문해 보세요.
+                              </p>
+
+                              {!followUpVisible && !followUpLoading && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    sendFollowUp(
+                                      "도입 초기 주의사항만 정리해 줘"
+                                    )
+                                  }
+                                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-black/[0.08] bg-white px-3.5 py-3 text-left text-[11px] transition hover:bg-[#fafaf9]"
+                                >
+                                  <span>
+                                    도입 초기 주의사항만 정리해 줘
+                                  </span>
+                                  <ArrowRight size={14} />
+                                </button>
+                              )}
+
+                              {followUpLoading && (
+                                <div className="flex items-center gap-2 py-3 text-[11px] text-[#888]">
+                                  답변을 정리하는 중
+                                  <span className="typing-dot" />
+                                  <span className="typing-dot delay-1" />
+                                  <span className="typing-dot delay-2" />
+                                </div>
+                              )}
+
+                              {followUpVisible && (
+                                <div className="demo-fade-in">
+                                  <div className="ml-auto mb-3 w-fit max-w-[90%] rounded-2xl rounded-br-sm bg-[#252525] px-3.5 py-2.5 text-[11px] leading-5 text-white">
+                                    {followUpQuestion}
+                                  </div>
+
+                                  <p className="text-[12px] leading-7 text-[#555]">
+                                    도입 초기에는 담당자 교육, 단계별 안내,
+                                    고객 인증 절차를 확인하고, 운영 중 발견된
+                                    불편 사항을 기록해 개선하는 것이 좋습니다.
+                                  </p>
+
+                                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[#f5f5f3] px-2.5 py-2 text-[10px] text-[#666]">
+                                    <DocumentIcon size={13} />
+                                    마케팅 운영 가이드.pdf · p.7
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {chatAnswerVisible && (
+                    <div className="mt-5 rounded-xl bg-[#f7f7f5] p-4">
+                      <p className="text-[11px] leading-6 text-[#777]">
+                        필요한 자료를 찾고, 관련 내용을 이어서 확인할 수 있어요.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={scrollToSignup}
+                        className="mt-3 flex items-center gap-2 text-[11px] font-medium text-[#444] transition hover:text-black"
+                      >
+                        Gather 업데이트 소식 받기
+                        <ArrowRight size={14} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Demo disclaimer */}
-              <div className="mt-5 rounded-xl bg-[#f7f7f5] p-4">
-                <p className="text-[11px] leading-5 text-[#858585]">
-                  검색 결과와 페이지 번호는 체험을 위해 미리 구성한 예시입니다.
+              <div className="mt-6 rounded-xl bg-[#f7f7f5] p-3.5">
+                <p className="text-[10px] leading-5 text-[#858585]">
+                  이 화면은 검색과 AI 대화 흐름을 보여주는 체험용 예시입니다.
+                  자료와 답변은 미리 구성되어 있으며, 실제 Pelyn 검색이나 AI와
+                  연결되어 있지 않습니다.
                 </p>
+
+                {demoView !== "search" && (
+                  <button
+                    type="button"
+                    onClick={resetDemo}
+                    className="mt-2 text-[10px] font-medium text-[#666] underline underline-offset-2 hover:text-black"
+                  >
+                    체험 처음부터 다시 하기
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -947,6 +1411,61 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* Small, subtle interaction animations */}
+      <style jsx global>{`
+        @keyframes demoFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .demo-fade-in {
+          animation: demoFadeIn 220ms ease-out both;
+        }
+
+        @keyframes demoTyping {
+          0%,
+          60%,
+          100% {
+            opacity: 0.3;
+            transform: translateY(0);
+          }
+          30% {
+            opacity: 1;
+            transform: translateY(-2px);
+          }
+        }
+
+        .typing-dot {
+          display: inline-block;
+          width: 4px;
+          height: 4px;
+          border-radius: 999px;
+          background: #777;
+          animation: demoTyping 900ms ease-in-out infinite;
+        }
+
+        .typing-dot.delay-1 {
+          animation-delay: 150ms;
+        }
+
+        .typing-dot.delay-2 {
+          animation-delay: 300ms;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .demo-fade-in,
+          .typing-dot {
+            animation: none;
+          }
+        }
+      `}</style>
     </main>
   );
 }
