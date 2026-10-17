@@ -460,11 +460,9 @@ export default function Home() {
             </div>
 
             <h1 className="max-w-[620px] text-[42px] font-semibold leading-[1.2] tracking-[-2.6px] md:text-[58px] lg:text-[64px]">
-              기획안, 보고서,
+              분명 어디서 봤는데,
               <br />
-              업무 가이드까지.
-              <br />
-              <span className="text-[#929292]">필요한 정보만 빠르게.</span>
+              <span className="text-[#929292]">어디 있는지 모르겠는 그 정보</span>
             </h1>
 
             <p className="mt-7 max-w-[470px] text-[15px] leading-7 text-[#696969] md:text-[16px]">
