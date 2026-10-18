@@ -242,7 +242,7 @@ export default function Home() {
         {/* 상단 로고 */}
         <div className="absolute left-6 top-7 flex items-center gap-2 md:left-12 md:top-10">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2864F0] text-sm font-bold text-white">
-            P
+            G
           </div>
           <span className="text-lg font-bold tracking-tight">Gather</span>
         </div>
@@ -261,8 +261,8 @@ export default function Home() {
           </h1>
 
           <p className="mx-auto mt-7 max-w-lg text-base leading-7 text-[#5F7190] sm:text-lg sm:leading-8">
-            Pelyn은 업무 자료를 검색하고,
-            <br className="sm:hidden" /> AI에게 질문해 필요한 답을 찾도록 도와줘요.
+            업무 자료를 검색하고,
+            <br className="sm:hidden" /> AI에게 질문해 필요한 답을 찾아보새요.
           </p>
 
           <button
@@ -336,7 +336,7 @@ export default function Home() {
             </h2>
 
             <p className="mt-4 text-sm leading-6 text-[#7184A3] sm:text-base">
-              Pelyn의 새로운 기능과 체험 소식을
+              새로운 기능과 체험 소식을
               <br className="sm:hidden" /> 가장 먼저 알려드릴게요.
             </p>
           </div>
@@ -444,7 +444,7 @@ export default function Home() {
               </button>
 
               <p className="text-center text-xs leading-5 text-[#9AAAC0]">
-                입력한 정보는 Pelyn 관련 소식 전달 목적으로만 사용돼요.
+                입력한 정보는 업데이트 소식 전달 목적으로만 사용돼요.
               </p>
             </form>
           )}
@@ -455,7 +455,7 @@ export default function Home() {
       <footer className="border-t border-[#E1EBFA] px-6 py-7">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-xs text-[#8798B3] sm:flex-row">
           <span className="font-bold tracking-tight text-[#66635C]">
-            Pelyn
+            Gather
           </span>
           <span>흩어진 정보를 연결하고, 필요한 답을 찾다.</span>
         </div>
@@ -484,7 +484,7 @@ export default function Home() {
                   P
                 </div>
                 <div>
-                  <p className="text-sm font-bold">Pelyn 체험하기</p>
+                  <p className="text-sm font-bold">10초 체험하기</p>
                   <p className="mt-0.5 text-xs text-[#8192AD]">
                     자료를 찾고 AI에게 질문해 보세요.
                   </p>
@@ -827,7 +827,7 @@ export default function Home() {
                         ✳
                       </div>
                       <div>
-                        <p className="text-sm font-bold">Pelyn AI</p>
+                        <p className="text-sm font-bold"> AI</p>
                         <p className="mt-1 text-xs text-[#8192AD]">
                           참고 자료: {selectedResult.title}
                         </p>
@@ -977,7 +977,7 @@ export default function Home() {
                     </p>
 
                     <p className="mt-2 text-sm leading-6 text-[#5F7190]">
-                      Pelyn의 새로운 기능과 체험 소식을 가장 먼저 받아보세요.
+                      새로운 기능과 체험 소식을 가장 먼저 받아보세요.
                     </p>
 
                     <button
