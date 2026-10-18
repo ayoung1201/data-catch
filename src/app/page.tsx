@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 type DemoStep = "upload" | "search" | "detail" | "question" | "answer";
@@ -46,6 +46,29 @@ const jobCategories = [
 export default function Home() {
   // 체험 상태
   const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const hasAutoOpened = useRef(false);
+  const isDemoOpenRef = useRef(false);
+
+  useEffect(() => {
+    isDemoOpenRef.current = isDemoOpen;
+  }, [isDemoOpen]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY < 60) {
+        hasAutoOpened.current = false;
+        return;
+      }
+      if (!hasAutoOpened.current && !isDemoOpenRef.current) {
+        hasAutoOpened.current = true;
+        setDemoStep("upload");
+        setUploadProgress(0);
+        setIsDemoOpen(true);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   const [demoStep, setDemoStep] = useState<DemoStep>("upload");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [searchQuery, setSearchQuery] = useState("도입 사례");
@@ -213,21 +236,21 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#FAF9F6] text-[#20201F]">
+    <main className="min-h-screen overflow-x-hidden bg-[#F8FBFF] text-[#20201F]">
       {/* 첫 화면 */}
-      <section className="relative flex min-h-[90vh] flex-col items-center justify-center px-6 py-24 text-center">
+      <section className="relative flex min-h-[90vh] flex-col items-center justify-center bg-[radial-gradient(ellipse_at_50%_35%,rgba(117,184,255,0.16),transparent_55%)] px-6 py-24 text-center">
         {/* 상단 로고 */}
         <div className="absolute left-6 top-7 flex items-center gap-2 md:left-12 md:top-10">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#292927] text-sm font-bold text-white">
-            G
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2864F0] text-sm font-bold text-white">
+            P
           </div>
           <span className="text-lg font-bold tracking-tight">Gather</span>
         </div>
 
         {/* 메인 콘텐츠 */}
         <div className="mx-auto w-full max-w-4xl">
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#E7E4DD] bg-white/80 px-4 py-2 text-sm text-[#68665F]">
-            <span className="h-2 w-2 rounded-full bg-[#8B9B78]" />
+          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#E1EBFA] bg-white/80 px-4 py-2 text-sm text-[#68665F]">
+            <span className="h-2 w-2 rounded-full bg-[#2864F0]" />
             흩어진 업무 정보를 한곳에서
           </div>
 
@@ -237,15 +260,15 @@ export default function Home() {
             어디 있는지 모르겠는 그 정보.
           </h1>
 
-          <p className="mx-auto mt-7 max-w-lg text-base leading-7 text-[#77746E] sm:text-lg sm:leading-8">
-            Gather는 업무 자료를 검색하고,
+          <p className="mx-auto mt-7 max-w-lg text-base leading-7 text-[#5F7190] sm:text-lg sm:leading-8">
+            Pelyn은 업무 자료를 검색하고,
             <br className="sm:hidden" /> AI에게 질문해 필요한 답을 찾도록 도와줘요.
           </p>
 
           <button
             type="button"
             onClick={openDemo}
-            className="group mt-10 inline-flex min-h-[58px] items-center justify-center gap-3 rounded-2xl bg-[#292927] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:bg-[#41413D] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#292927]/15"
+            className="group mt-10 inline-flex min-h-[58px] items-center justify-center gap-3 rounded-2xl bg-[#2864F0] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-black/10 transition hover:-translate-y-0.5 hover:bg-[#1F50D0] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#2864F0]/15"
           >
             직접 체험해 보기
             <span className="transition-transform group-hover:translate-x-1">
@@ -253,13 +276,13 @@ export default function Home() {
             </span>
           </button>
 
-          <p className="mt-4 text-xs text-[#A09D95]">
+          <p className="mt-4 text-xs text-[#8798B3]">
             별도의 가입 없이 체험할 수 있어요.
           </p>
         </div>
 
         {/* 아래쪽 안내 */}
-        <div className="absolute bottom-7 flex flex-col items-center gap-2 text-xs text-[#A09D95]">
+        <div className="absolute bottom-7 flex flex-col items-center gap-2 text-xs text-[#8798B3]">
           <span>검색부터 AI 답변까지</span>
           <span className="animate-bounce text-base">↓</span>
         </div>
@@ -268,32 +291,32 @@ export default function Home() {
       {/* 간단한 서비스 소개 */}
       <section className="px-6 pb-24">
         <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-[#ECE9E2] bg-white p-6">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#F3F1EB] text-lg">
+          <div className="rounded-2xl border border-[#E1EBFA] bg-white p-6">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF5FF] text-lg">
               ↑
             </div>
             <h2 className="font-bold">자료 모으기</h2>
-            <p className="mt-2 text-sm leading-6 text-[#858179]">
+            <p className="mt-2 text-sm leading-6 text-[#7184A3]">
               필요한 업무 자료를 한곳에.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-[#ECE9E2] bg-white p-6">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#F3F1EB] text-lg">
+          <div className="rounded-2xl border border-[#E1EBFA] bg-white p-6">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF5FF] text-lg">
               ⌕
             </div>
             <h2 className="font-bold">한 번에 검색하기</h2>
-            <p className="mt-2 text-sm leading-6 text-[#858179]">
+            <p className="mt-2 text-sm leading-6 text-[#7184A3]">
               기억에 의존하지 않고 빠르게 찾기.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-[#ECE9E2] bg-white p-6">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#F3F1EB] text-lg">
+          <div className="rounded-2xl border border-[#E1EBFA] bg-white p-6">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF5FF] text-lg">
               ✳
             </div>
             <h2 className="font-bold">AI에게 질문하기</h2>
-            <p className="mt-2 text-sm leading-6 text-[#858179]">
+            <p className="mt-2 text-sm leading-6 text-[#7184A3]">
               자료를 읽고 필요한 답을 얻기.
             </p>
           </div>
@@ -302,9 +325,9 @@ export default function Home() {
 
       {/* 소식 신청 */}
       <section id="signup" className="scroll-mt-8 px-6 py-24">
-        <div className="mx-auto max-w-xl rounded-[28px] border border-[#EAE7E0] bg-white px-6 py-10 shadow-sm sm:px-10 sm:py-12">
+        <div className="mx-auto max-w-xl rounded-[28px] border border-[#E1EBFA] bg-white px-6 py-10 shadow-sm sm:px-10 sm:py-12">
           <div className="mb-7 text-center">
-            <span className="inline-flex rounded-full bg-[#F3F1EB] px-3 py-1.5 text-xs font-medium text-[#716E65]">
+            <span className="inline-flex rounded-full bg-[#EEF5FF] px-3 py-1.5 text-xs font-medium text-[#52627C]">
               STAY IN THE LOOP
             </span>
 
@@ -312,21 +335,21 @@ export default function Home() {
               새로운 소식 받기
             </h2>
 
-            <p className="mt-4 text-sm leading-6 text-[#858179] sm:text-base">
-              Gather의 새로운 기능과 체험 소식을
+            <p className="mt-4 text-sm leading-6 text-[#7184A3] sm:text-base">
+              Pelyn의 새로운 기능과 체험 소식을
               <br className="sm:hidden" /> 가장 먼저 알려드릴게요.
             </p>
           </div>
 
           {formSuccess ? (
-            <div className="rounded-2xl bg-[#F3F5EF] px-5 py-8 text-center">
+            <div className="rounded-2xl bg-[#EEF5FF] px-5 py-8 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-xl">
                 ✓
               </div>
-              <p className="mt-4 font-semibold text-[#4E6043]">
+              <p className="mt-4 font-semibold text-[#2453C7]">
                 신청이 완료됐어요!
               </p>
-              <p className="mt-2 text-sm leading-6 text-[#777C70]">
+              <p className="mt-2 text-sm leading-6 text-[#526B91]">
                 새로운 소식이 생기면 알려드릴게요.
               </p>
             </div>
@@ -346,7 +369,7 @@ export default function Home() {
                   placeholder="hello@example.com"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full rounded-xl border border-[#E6E3DC] bg-[#FCFBF9] px-4 py-3.5 text-sm outline-none transition placeholder:text-[#B1AEA7] focus:border-[#77766C] focus:bg-white focus:ring-4 focus:ring-[#292927]/5"
+                  className="w-full rounded-xl border border-[#D8E5F7] bg-[#FAFCFF] px-4 py-3.5 text-sm outline-none transition placeholder:text-[#A7B8D1] focus:border-[#77766C] focus:bg-white focus:ring-4 focus:ring-[#2864F0]/5"
                 />
               </div>
 
@@ -361,7 +384,7 @@ export default function Home() {
                   id="jobCategory"
                   value={jobCategory}
                   onChange={(event) => setJobCategory(event.target.value)}
-                  className="w-full appearance-none rounded-xl border border-[#E6E3DC] bg-[#FCFBF9] px-4 py-3.5 text-sm outline-none transition focus:border-[#77766C] focus:bg-white focus:ring-4 focus:ring-[#292927]/5"
+                  className="w-full appearance-none rounded-xl border border-[#D8E5F7] bg-[#FAFCFF] px-4 py-3.5 text-sm outline-none transition focus:border-[#77766C] focus:bg-white focus:ring-4 focus:ring-[#2864F0]/5"
                 >
                   <option value="">선택해 주세요</option>
                   {jobCategories.map((category) => (
@@ -372,14 +395,14 @@ export default function Home() {
                 </select>
               </div>
 
-              <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-[#77746E]">
+              <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-[#5F7190]">
                 <input
                   type="checkbox"
                   checked={privacyConsent}
                   onChange={(event) =>
                     setPrivacyConsent(event.target.checked)
                   }
-                  className="mt-1 h-4 w-4 shrink-0 accent-[#292927]"
+                  className="mt-1 h-4 w-4 shrink-0 accent-[#2864F0]"
                 />
                 <span>
                   <span className="font-medium text-[#383833]">
@@ -395,8 +418,8 @@ export default function Home() {
                   role="status"
                   className={`rounded-xl px-4 py-3 text-sm leading-6 ${
                     formSuccess
-                      ? "bg-[#F3F5EF] text-[#4E6043]"
-                      : "bg-[#FBF0ED] text-[#A14D3B]"
+                      ? "bg-[#EEF5FF] text-[#2453C7]"
+                      : "bg-[#FFF1F0] text-[#A34444]"
                   }`}
                 >
                   {formMessage}
@@ -406,7 +429,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={formLoading}
-                className="flex min-h-[54px] w-full items-center justify-center gap-2 rounded-xl bg-[#292927] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#41413D] disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex min-h-[54px] w-full items-center justify-center gap-2 rounded-xl bg-[#2864F0] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#1F50D0] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {formLoading ? (
                   <>
@@ -420,8 +443,8 @@ export default function Home() {
                 )}
               </button>
 
-              <p className="text-center text-xs leading-5 text-[#AAA69E]">
-                입력한 정보는 Gather 관련 소식 전달 목적으로만 사용돼요.
+              <p className="text-center text-xs leading-5 text-[#9AAAC0]">
+                입력한 정보는 Pelyn 관련 소식 전달 목적으로만 사용돼요.
               </p>
             </form>
           )}
@@ -429,10 +452,10 @@ export default function Home() {
       </section>
 
       {/* 푸터 */}
-      <footer className="border-t border-[#EAE7E0] px-6 py-7">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-xs text-[#A09D95] sm:flex-row">
+      <footer className="border-t border-[#E1EBFA] px-6 py-7">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-xs text-[#8798B3] sm:flex-row">
           <span className="font-bold tracking-tight text-[#66635C]">
-            Gather
+            Pelyn
           </span>
           <span>흩어진 정보를 연결하고, 필요한 답을 찾다.</span>
         </div>
@@ -452,17 +475,17 @@ export default function Home() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="demo-title"
-            className="relative my-auto w-full max-w-2xl animate-[modalIn_0.3s_ease-out] overflow-hidden rounded-[26px] border border-white/70 bg-[#FCFBF9] shadow-2xl shadow-black/20 sm:rounded-[32px]"
+            className="relative my-auto w-full max-w-2xl animate-[modalIn_0.3s_ease-out] overflow-hidden rounded-[26px] border border-white/70 bg-[#FAFCFF] shadow-2xl shadow-black/20 sm:rounded-[32px]"
           >
             {/* 모달 상단 */}
-            <div className="flex items-center justify-between border-b border-[#ECE9E2] px-5 py-4 sm:px-8 sm:py-5">
+            <div className="flex items-center justify-between border-b border-[#E1EBFA] px-5 py-4 sm:px-8 sm:py-5">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#292927] text-sm font-bold text-white">
-                  G
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2864F0] text-sm font-bold text-white">
+                  P
                 </div>
                 <div>
-                  <p className="text-sm font-bold">Gather 체험하기</p>
-                  <p className="mt-0.5 text-xs text-[#9A968E]">
+                  <p className="text-sm font-bold">Pelyn 체험하기</p>
+                  <p className="mt-0.5 text-xs text-[#8192AD]">
                     자료를 찾고 AI에게 질문해 보세요.
                   </p>
                 </div>
@@ -472,7 +495,7 @@ export default function Home() {
                 type="button"
                 onClick={closeDemo}
                 aria-label="체험 닫기"
-                className="flex h-9 w-9 items-center justify-center rounded-full text-xl text-[#858179] transition hover:bg-[#F0EEE8] hover:text-[#292927]"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-xl text-[#7184A3] transition hover:bg-[#EAF2FF] hover:text-[#2864F0]"
               >
                 ×
               </button>
@@ -506,15 +529,15 @@ export default function Home() {
                       <div
                         className={`h-1.5 rounded-full transition-colors duration-300 ${
                           isComplete || isCurrent
-                            ? "bg-[#45463E]"
-                            : "bg-[#EAE7E0]"
+                            ? "bg-[#2864F0]"
+                            : "bg-[#E1EBFA]"
                         }`}
                       />
                       <span
                         className={`truncate text-[10px] sm:text-xs ${
                           isCurrent
-                            ? "font-bold text-[#34342F]"
-                            : "text-[#A09D95]"
+                            ? "font-bold text-[#1F3764]"
+                            : "text-[#8798B3]"
                         }`}
                       >
                         {label}
@@ -530,9 +553,9 @@ export default function Home() {
               {/* 1. 파일 업로드 */}
               {demoStep === "upload" && (
                 <div className="py-5 text-center sm:py-8">
-                  <div className="relative mx-auto mb-7 flex h-24 w-24 items-center justify-center rounded-[28px] bg-[#F0EEE7]">
-                    <div className="absolute inset-0 animate-ping rounded-[28px] bg-[#E5E2D8] opacity-40" />
-                    <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-[#E1DED5] bg-white shadow-sm">
+                  <div className="relative mx-auto mb-7 flex h-24 w-24 items-center justify-center rounded-[28px] bg-[#EAF3FF]">
+                    <div className="absolute inset-0 animate-ping rounded-[28px] bg-[#D8E9FF] opacity-40" />
+                    <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-[#D6E6FF] bg-white shadow-sm">
                       <svg
                         viewBox="0 0 48 48"
                         fill="none"
@@ -541,19 +564,19 @@ export default function Home() {
                       >
                         <path
                           d="M14 5.5H27L37 15.5V40C37 41.1 36.1 42 35 42H14C12.9 42 12 41.1 12 40V7.5C12 6.4 12.9 5.5 14 5.5Z"
-                          stroke="#45463E"
+                          stroke="#2864F0"
                           strokeWidth="2"
                           strokeLinejoin="round"
                         />
                         <path
                           d="M27 5.5V15.5H37"
-                          stroke="#45463E"
+                          stroke="#2864F0"
                           strokeWidth="2"
                           strokeLinejoin="round"
                         />
                         <path
                           d="M24 34V22M19 27L24 22L29 27"
-                          stroke="#777D67"
+                          stroke="#75B8FF"
                           strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -569,20 +592,20 @@ export default function Home() {
                     업무 자료를 모으고 있어요
                   </h2>
 
-                  <p className="mt-3 text-sm leading-6 text-[#858179]">
+                  <p className="mt-3 text-sm leading-6 text-[#7184A3]">
                     흩어져 있던 문서를 한곳에 모아볼게요.
                   </p>
 
-                  <div className="mx-auto mt-8 max-w-sm rounded-2xl border border-[#EAE7E0] bg-white p-4 text-left">
+                  <div className="mx-auto mt-8 max-w-sm rounded-2xl border border-[#E1EBFA] bg-white p-4 text-left">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F5F2E9] text-sm font-bold text-[#827A64]">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EAF3FF] text-sm font-bold text-[#2864F0]">
                         PDF
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold">
                           회사 소개서.pdf
                         </p>
-                        <p className="mt-1 text-xs text-[#9A968E]">
+                        <p className="mt-1 text-xs text-[#8192AD]">
                           {uploadProgress < 100
                             ? "자료를 정리하는 중..."
                             : "업로드 완료"}
@@ -591,23 +614,23 @@ export default function Home() {
                       <span
                         className={`text-xs font-semibold ${
                           uploadProgress >= 100
-                            ? "text-[#647A52]"
-                            : "text-[#858179]"
+                            ? "text-[#2864F0]"
+                            : "text-[#7184A3]"
                         }`}
                       >
                         {uploadProgress}%
                       </span>
                     </div>
 
-                    <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#EFEEE9]">
+                    <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#E5EEFC]">
                       <div
-                        className="h-full rounded-full bg-[#777D67] transition-all duration-100"
+                        className="h-full rounded-full bg-[#75B8FF] transition-all duration-100"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>
                   </div>
 
-                  <p className="mt-5 text-xs text-[#AAA69E]">
+                  <p className="mt-5 text-xs text-[#9AAAC0]">
                     잠시만 기다려 주세요.
                   </p>
                 </div>
@@ -617,7 +640,7 @@ export default function Home() {
               {demoStep === "search" && (
                 <div className="animate-[contentIn_0.3s_ease-out]">
                   <div className="mb-6">
-                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#888579]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#7184A3]">
                       STEP 01
                     </p>
                     <h2
@@ -626,7 +649,7 @@ export default function Home() {
                     >
                       찾고 싶은 정보를 검색해 보세요.
                     </h2>
-                    <p className="mt-3 text-sm leading-6 text-[#858179]">
+                    <p className="mt-3 text-sm leading-6 text-[#7184A3]">
                       정확한 파일명이 기억나지 않아도 괜찮아요.
                     </p>
                   </div>
@@ -636,26 +659,26 @@ export default function Home() {
                       event.preventDefault();
                       handleSearch();
                     }}
-                    className="flex items-center gap-2 rounded-2xl border border-[#DCD9D0] bg-white p-2 transition focus-within:border-[#777D67] focus-within:ring-4 focus-within:ring-[#777D67]/10"
+                    className="flex items-center gap-2 rounded-2xl border border-[#D2E1F7] bg-white p-2 transition focus-within:border-[#75B8FF] focus-within:ring-4 focus-within:ring-[#75B8FF]/10"
                   >
-                    <span className="pl-3 text-xl text-[#858179]">⌕</span>
+                    <span className="pl-3 text-xl text-[#7184A3]">⌕</span>
                     <input
                       autoFocus
                       value={searchQuery}
-                      onChange={(event) => setSearchQuery(event.target.value)}
-                      placeholder="예: 도입 사례"
-                      className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none placeholder:text-[#B1AEA7]"
+                      readOnly
+                      placeholder="도입 사례"
+                      className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none placeholder:text-[#A7B8D1]"
                     />
                     <button
                       type="submit"
-                      className="shrink-0 rounded-xl bg-[#292927] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#41413D]"
+                      className="shrink-0 rounded-xl bg-[#2864F0] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1F50D0]"
                     >
                       검색
                     </button>
                   </form>
 
                   <div className="mt-6">
-                    <p className="mb-3 text-xs font-medium text-[#9A968E]">
+                    <p className="mb-3 text-xs font-medium text-[#8192AD]">
                       이런 자료를 찾을 수 있어요
                     </p>
 
@@ -668,9 +691,9 @@ export default function Home() {
                             setSelectedResult(result);
                             setDemoStep("detail");
                           }}
-                          className="flex w-full items-center gap-3 rounded-2xl border border-[#ECE9E2] bg-white p-3.5 text-left transition hover:border-[#C7C5B9] hover:bg-[#FAF9F6]"
+                          className="flex w-full items-center gap-3 rounded-2xl border border-[#E1EBFA] bg-white p-3.5 text-left transition hover:border-[#A9C9F8] hover:bg-[#F8FBFF]"
                         >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F3F1EB] text-xs font-bold text-[#827A64]">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF5FF] text-xs font-bold text-[#2864F0]">
                             {result.type === "PDF 자료" ? "PDF" : "DOC"}
                           </div>
 
@@ -678,12 +701,12 @@ export default function Home() {
                             <p className="truncate text-sm font-semibold">
                               {result.title}
                             </p>
-                            <p className="mt-1 truncate text-xs text-[#969188]">
+                            <p className="mt-1 truncate text-xs text-[#8192AD]">
                               {result.description}
                             </p>
                           </div>
 
-                          <span className="text-lg text-[#A09D95]">›</span>
+                          <span className="text-lg text-[#8798B3]">›</span>
                         </button>
                       ))}
                     </div>
@@ -695,7 +718,7 @@ export default function Home() {
                       setSelectedResult(demoResults[0]);
                       setDemoStep("detail");
                     }}
-                    className="mt-6 w-full rounded-xl bg-[#292927] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#41413D]"
+                    className="mt-6 w-full rounded-xl bg-[#2864F0] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#1F50D0]"
                   >
                     검색 결과 확인하기 →
                   </button>
@@ -708,17 +731,17 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => setDemoStep("search")}
-                    className="mb-5 inline-flex items-center gap-2 text-sm text-[#858179] transition hover:text-[#292927]"
+                    className="mb-5 inline-flex items-center gap-2 text-sm text-[#7184A3] transition hover:text-[#2864F0]"
                   >
                     ← 검색 결과로
                   </button>
 
-                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#888579]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#7184A3]">
                     STEP 02
                   </p>
 
                   <div className="mt-3 flex items-start gap-4">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#F0EEE7] text-sm font-bold text-[#827A64]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#EAF3FF] text-sm font-bold text-[#2864F0]">
                       {selectedResult.type === "PDF 자료" ? "PDF" : "DOC"}
                     </div>
 
@@ -729,18 +752,18 @@ export default function Home() {
                       >
                         {selectedResult.title}
                       </h2>
-                      <p className="mt-2 text-sm text-[#858179]">
+                      <p className="mt-2 text-sm text-[#7184A3]">
                         {selectedResult.type} · {selectedResult.location}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-6 rounded-2xl border border-[#EAE7E0] bg-white p-5 sm:p-6">
+                  <div className="mt-6 rounded-2xl border border-[#E1EBFA] bg-white p-5 sm:p-6">
                     <div className="flex items-center justify-between gap-3">
-                      <span className="rounded-lg bg-[#F3F1EB] px-2.5 py-1.5 text-xs font-semibold text-[#77746E]">
+                      <span className="rounded-lg bg-[#EEF5FF] px-2.5 py-1.5 text-xs font-semibold text-[#5F7190]">
                         자료 미리보기
                       </span>
-                      <span className="text-xs text-[#A09D95]">
+                      <span className="text-xs text-[#8798B3]">
                         {selectedResult.location}
                       </span>
                     </div>
@@ -749,12 +772,12 @@ export default function Home() {
                       {selectedResult.description}
                     </h3>
 
-                    <p className="mt-3 text-sm leading-7 text-[#716E65]">
+                    <p className="mt-3 text-sm leading-7 text-[#52627C]">
                       {selectedResult.content}
                     </p>
 
-                    <div className="mt-5 border-t border-[#F0EEE8] pt-4">
-                      <p className="text-xs text-[#A09D95]">
+                    <div className="mt-5 border-t border-[#EAF2FF] pt-4">
+                      <p className="text-xs text-[#8798B3]">
                         자료를 확인했어요. 이제 AI에게 질문해 보세요.
                       </p>
                     </div>
@@ -763,7 +786,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => setDemoStep("question")}
-                    className="mt-6 w-full rounded-xl bg-[#292927] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#41413D]"
+                    className="mt-6 w-full rounded-xl bg-[#2864F0] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#1F50D0]"
                   >
                     이 자료에 대해 AI에게 질문하기 →
                   </button>
@@ -776,12 +799,12 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => setDemoStep("detail")}
-                    className="mb-5 inline-flex items-center gap-2 text-sm text-[#858179] transition hover:text-[#292927]"
+                    className="mb-5 inline-flex items-center gap-2 text-sm text-[#7184A3] transition hover:text-[#2864F0]"
                   >
                     ← 자료로 돌아가기
                   </button>
 
-                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#888579]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#7184A3]">
                     STEP 03
                   </p>
 
@@ -794,18 +817,18 @@ export default function Home() {
                     AI에게 물어보세요.
                   </h2>
 
-                  <p className="mt-3 text-sm leading-6 text-[#858179]">
+                  <p className="mt-3 text-sm leading-6 text-[#7184A3]">
                     필요한 내용을 질문하면 핵심을 정리해 드려요.
                   </p>
 
-                  <div className="mt-6 rounded-2xl border border-[#EAE7E0] bg-white p-4 sm:p-5">
-                    <div className="flex items-center gap-3 border-b border-[#F0EEE8] pb-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F0EEE7] text-lg">
+                  <div className="mt-6 rounded-2xl border border-[#E1EBFA] bg-white p-4 sm:p-5">
+                    <div className="flex items-center gap-3 border-b border-[#EAF2FF] pb-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF3FF] text-lg">
                         ✳
                       </div>
                       <div>
-                        <p className="text-sm font-bold">Gather AI</p>
-                        <p className="mt-1 text-xs text-[#9A968E]">
+                        <p className="text-sm font-bold">Pelyn AI</p>
+                        <p className="mt-1 text-xs text-[#8192AD]">
                           참고 자료: {selectedResult.title}
                         </p>
                       </div>
@@ -821,17 +844,17 @@ export default function Home() {
                     <textarea
                       id="aiQuestion"
                       value={aiQuestion}
-                      onChange={(event) => setAiQuestion(event.target.value)}
+                      readOnly
                       rows={3}
-                      placeholder="예: 주요 도입 사례와 효과를 정리해 줘."
-                      className="w-full resize-none rounded-xl border border-[#E6E3DC] bg-[#FCFBF9] p-4 text-sm leading-6 outline-none transition placeholder:text-[#B1AEA7] focus:border-[#777D67] focus:bg-white focus:ring-4 focus:ring-[#777D67]/10"
+                      placeholder="주요 도입 사례와 효과를 정리해 줘."
+                      className="w-full resize-none rounded-xl border border-[#D8E5F7] bg-[#FAFCFF] p-4 text-sm leading-6 outline-none transition placeholder:text-[#A7B8D1] focus:border-[#75B8FF] focus:bg-white focus:ring-4 focus:ring-[#75B8FF]/10"
                     />
 
                     <button
                       type="button"
                       onClick={handleAskAI}
                       disabled={aiLoading || !aiQuestion.trim()}
-                      className="mt-3 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-[#292927] px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-[#41413D] disabled:cursor-not-allowed disabled:opacity-60"
+                      className="mt-3 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-[#2864F0] px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-[#1F50D0] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {aiLoading ? (
                         <>
@@ -852,11 +875,11 @@ export default function Home() {
               {demoStep === "answer" && (
                 <div className="animate-[contentIn_0.3s_ease-out]">
                   <div className="mb-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F0EEE7] text-xl">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF3FF] text-xl">
                       ✳
                     </div>
 
-                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#888579]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#7184A3]">
                       AI ANSWER
                     </p>
 
@@ -868,20 +891,20 @@ export default function Home() {
                     </h2>
                   </div>
 
-                  <div className="rounded-2xl border border-[#EAE7E0] bg-white p-5 sm:p-6">
+                  <div className="rounded-2xl border border-[#E1EBFA] bg-white p-5 sm:p-6">
                     <div className="flex items-center gap-2 text-sm font-semibold">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F0EEE7] text-xs">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF3FF] text-xs">
                         Q
                       </span>
                       {aiQuestion}
                     </div>
 
-                    <div className="mt-5 border-t border-[#F0EEE8] pt-5">
+                    <div className="mt-5 border-t border-[#EAF2FF] pt-5">
                       <p className="text-sm font-bold">핵심 내용</p>
 
-                      <div className="mt-4 space-y-4 text-sm leading-7 text-[#716E65]">
+                      <div className="mt-4 space-y-4 text-sm leading-7 text-[#52627C]">
                         <p>
-                          <span className="font-semibold text-[#34342F]">
+                          <span className="font-semibold text-[#1F3764]">
                             1. 다양한 산업군에서 도입
                           </span>
                           <br />
@@ -890,7 +913,7 @@ export default function Home() {
                         </p>
 
                         <p>
-                          <span className="font-semibold text-[#34342F]">
+                          <span className="font-semibold text-[#1F3764]">
                             2. 초기 온보딩이 중요
                           </span>
                           <br />
@@ -899,7 +922,7 @@ export default function Home() {
                         </p>
 
                         <p>
-                          <span className="font-semibold text-[#34342F]">
+                          <span className="font-semibold text-[#1F3764]">
                             3. 기대 효과
                           </span>
                           <br />
@@ -909,35 +932,35 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-6 border-t border-[#F0EEE8] pt-5">
-                      <p className="mb-3 text-xs font-semibold text-[#858179]">
+                    <div className="mt-6 border-t border-[#EAF2FF] pt-5">
+                      <p className="mb-3 text-xs font-semibold text-[#7184A3]">
                         참고한 자료
                       </p>
 
                       <div className="space-y-2">
-                        <div className="flex items-center gap-3 rounded-xl bg-[#F8F7F3] p-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-[10px] font-bold text-[#827A64]">
+                        <div className="flex items-center gap-3 rounded-xl bg-[#F5F9FF] p-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-[10px] font-bold text-[#2864F0]">
                             PDF
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-xs font-semibold text-[#55534D]">
+                            <p className="truncate text-xs font-semibold text-[#40577C]">
                               회사 소개서.pdf
                             </p>
-                            <p className="mt-1 text-[11px] text-[#9A968E]">
+                            <p className="mt-1 text-[11px] text-[#8192AD]">
                               p.3 · 주요 도입 사례
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-xl bg-[#F8F7F3] p-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-[10px] font-bold text-[#827A64]">
+                        <div className="flex items-center gap-3 rounded-xl bg-[#F5F9FF] p-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-[10px] font-bold text-[#2864F0]">
                             PDF
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-xs font-semibold text-[#55534D]">
+                            <p className="truncate text-xs font-semibold text-[#40577C]">
                               마케팅 운영 가이드.pdf
                             </p>
-                            <p className="mt-1 text-[11px] text-[#9A968E]">
+                            <p className="mt-1 text-[11px] text-[#8192AD]">
                               p.7 · 운영 가이드
                             </p>
                           </div>
@@ -946,21 +969,21 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="mt-6 rounded-2xl bg-[#F0EEE7] p-5 sm:p-6">
+                  <div className="mt-6 rounded-2xl bg-[#EAF3FF] p-5 sm:p-6">
                     <p className="text-base font-bold leading-7">
                       필요한 정보가 어디 있는지 기억하지 않아도,
                       <br className="hidden sm:block" />
                       질문으로 바로 찾을 수 있어요.
                     </p>
 
-                    <p className="mt-2 text-sm leading-6 text-[#77746E]">
-                      Gather의 새로운 기능과 체험 소식을 가장 먼저 받아보세요.
+                    <p className="mt-2 text-sm leading-6 text-[#5F7190]">
+                      Pelyn의 새로운 기능과 체험 소식을 가장 먼저 받아보세요.
                     </p>
 
                     <button
                       type="button"
                       onClick={goToSignup}
-                      className="mt-5 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-[#292927] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#41413D]"
+                      className="mt-5 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-[#2864F0] px-5 py-4 text-sm font-semibold text-white transition hover:bg-[#1F50D0]"
                     >
                       업데이트 소식 받기 <span>→</span>
                     </button>
@@ -969,7 +992,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={openDemo}
-                    className="mt-4 w-full rounded-xl border border-[#E6E3DC] bg-white px-5 py-3.5 text-sm font-medium text-[#77746E] transition hover:bg-[#F8F7F3] hover:text-[#292927]"
+                    className="mt-4 w-full rounded-xl border border-[#D8E5F7] bg-white px-5 py-3.5 text-sm font-medium text-[#5F7190] transition hover:bg-[#F5F9FF] hover:text-[#2864F0]"
                   >
                     체험 처음부터 다시 하기
                   </button>
@@ -977,7 +1000,7 @@ export default function Home() {
               )}
 
               {/* 예시 데이터 안내 */}
-              <p className="mt-6 text-center text-[10px] leading-5 text-[#AAA69E]">
+              <p className="mt-6 text-center text-[10px] leading-5 text-[#9AAAC0]">
                 본 체험은 서비스 이해를 돕기 위한 예시 화면이며,
                 <br />
                 실제 파일 업로드나 AI 검색이 실행되는 것은 아니에요.
